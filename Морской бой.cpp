@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <windows.h>
 using namespace std;
@@ -24,8 +24,17 @@ pair <int, int> emptyFieldCounter();
 short int EnemyField[10][21];
 short int PlayerField[10][21];
 bool AllAlive = true;
-bool cheats = false;
-bool checkCheats = false;
+class cheats {
+	bool cheatstatus = false;
+public:
+	void setcheats() {
+		cheatstatus = true;
+	}
+	bool readcheats() {
+		return cheatstatus;
+	}
+};
+cheats cheat;
 short int BotDifficult;
 //	1 корабль — ряд из 4 клеток («четырёхпалубный»; линкор)
 struct Battleship {
@@ -82,11 +91,9 @@ int main() {
 	cout << "Включить отображение вражеского поля(Читы)?(\"ДА\" если включить. Любое другое чтобы не включать) Ваш ответ: ";
 	string c = "";
 	cin >> c;
-	cheats = false;
 	if (c == "„Ђ") {
 		cout << "Читы были включены\a" << endl;
-		checkCheats = true;
-		cheats = true;
+		cheat.setcheats();
 	}
 difficultError:
 	cout << "Установите уровень сложности:\n\t1.Бот \"Рандом\"\t\tЛёгкая\n\t2.Бот \"Стандарт\"\tСредняя\n\t3.Бот \"Шахматы\"\t\tСложная" << endl << "Ваш ответ: ";
@@ -2248,7 +2255,8 @@ againEnemyDestroyer3:
 						}
 						goto WayError;
 					default:
-						cout << "\n\n\n\n\t\t\t\tERR2Вы попали в очень странное место...\n\n\n\n";
+						cout << "\n\n\n\n\t\t\t\tERR Вы попали в очень странное место...\n\n\n\n";
+						system("pause");
 						return 0;
 					}
 				}
@@ -2539,6 +2547,7 @@ againEnemyDestroyer3:
 				break;
 			default:
 				cout << "\n\n\n\n\t\t\t\tERR Выбран бот #" << BotDifficult << "\n\n\n\n";
+				system("pause");
 				return 0;
 			}
 			enemyShot(x, y);
@@ -2597,7 +2606,7 @@ void PrintFields() {
 					cout << ' ';//Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (cheats && checkCheats && state == 0 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
+				else if (cheat.readcheats() && state == 0 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
 					cout << ' ';//Живая лодка (зелёный)
@@ -2610,7 +2619,7 @@ void PrintFields() {
 				PlayerMissCounter++;
 			}
 			else if (state == 2) {
-				if (cheats && checkCheats) {
+				if (cheat.readcheats()) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
 					cout << ' ';//Живая лодка (зелёный)
@@ -2621,7 +2630,7 @@ void PrintFields() {
 			}
 			else if (state == 3) {
 				if (EnemyField[y][x - 1] == 6 || EnemyField[y][x + 1] == 6)cout << '|';
-				else if (cheats && checkCheats)cout << '|';//Граница лодки
+				else if (cheat.readcheats())cout << '|';//Граница лодки
 				else cout << ' ';
 			}
 			else if (state == 5) {
@@ -2726,12 +2735,14 @@ void PrintFields() {
 	cout << endl;
 
 	if (EnemyBoatCounter == 0) {
-		cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t Вы одержали победу!Спасибо за игру...\n\n\n\n\n\n\n\n\n\n\n";
+		cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t Вы одержали победу!Спасибо за игру...\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		AllAlive = false;
+		system("pause");
 	}
 	if (PlayerBoatCounter == 0) {
-		cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t Вы проиграли. Спасибо за игру...\n\n\n\n\n\n\n\n\n\n\n";
+		cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t\t Вы проиграли. Спасибо за игру...\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		AllAlive = false;
+		system("pause");
 	}
 }
 void checkPlayerInterface(int y) {
