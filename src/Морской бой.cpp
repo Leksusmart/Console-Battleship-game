@@ -88,7 +88,7 @@ struct Speedboat EnemySpeedboat3;
 struct Speedboat EnemySpeedboat4;
 
 int main() {
-	setlocale(LC_ALL, "ru");
+	SetConsoleOutputCP(CP_UTF8);// Устанавливаем кодовую страницу вывода на UTF-8
 	srand(time(NULL));
 	short int Bot3Way = rand() % 2;
 	cout << "Добро пожаловать в игру Морской бой! Стартовое положение кораблей будет сгенерировано автоматически...\n";
