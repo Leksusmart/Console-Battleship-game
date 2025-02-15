@@ -20,21 +20,16 @@ void setState7(struct Battleship);
 void setState7(struct Cruiser);
 void setState7(struct Destroyer);
 void setState7(struct Speedboat);
+void generateBattleship(struct Battleship&, short int(&Field)[10][21]);
+bool generateCruiser(struct Cruiser&, short int(&Field)[10][21]);
+bool generateDestroyer(struct Destroyer&, short int(&Field)[10][21]);
+void generateSpeedboat(struct Speedboat&, short int(&Field)[10][21]);
+bool generateBoats();
 
 short int EnemyField[10][21];
 short int PlayerField[10][21];
 bool AllAlive = true;
-class cheats {
-	bool cheatstatus = false;
-public:
-	void setcheats() {
-		cheatstatus = true;
-	}
-	bool readcheats() const {
-		return cheatstatus;
-	}
-};
-cheats cheat;
+bool cheats = false;
 short int BotDifficult;
 //	1 корабль — ряд из 4 клеток («четырёхпалубный»; линкор)
 struct Battleship {
@@ -56,7 +51,7 @@ struct Destroyer {
 };
 //	4 корабля — 1 клетка («однопалубные»; торпедные катера)
 struct Speedboat {
-	int x = -1; int y = -1;
+	int x1 = -1; int y1 = -1;
 	bool dead = false;
 };
 
@@ -84,16 +79,17 @@ struct Speedboat EnemySpeedboat3;
 struct Speedboat EnemySpeedboat4;
 
 int main() {
-	SetConsoleOutputCP(CP_UTF8);// Устанавливаем кодовую страницу вывода на UTF-8
+	SetConsoleOutputCP(CP_UTF8); // Устанавливаем кодовую страницу вывода на UTF-8
+	SetConsoleCP(CP_UTF8); // Устанавливаем кодовую страницу ввода на UTF-8
 	srand(time(NULL));
 	short int Bot3Way = rand() % 2;
 	cout << "Добро пожаловать в игру Морской бой! Стартовое положение кораблей будет сгенерировано автоматически...\n";
 	cout << "Включить отображение вражеского поля(Читы)?(\"ДА\" если включить. Любое другое чтобы не включать) Ваш ответ: ";
 	string c = "";
 	cin >> c;
-	if (c == "„Ђ") {
+	if (c == "ДА") {
 		cout << "Читы были включены\a" << endl;
-		cheat.setcheats();
+		cheats = true;
 	}
 difficultError:
 	cout << "Установите уровень сложности:\n\t1.Бот \"Рандом\"\t\tЛёгкая\n\t2.Бот \"Стандарт\"\tСредняя\n\t3.Бот \"Шахматы\"\t\tСложная" << endl << "Ваш ответ: ";
@@ -113,6 +109,7 @@ difficultError:
 		cout << "\nВведите корректный номер (от 1 до 3)!\n";
 		goto difficultError;
 	}
+
 regenerate:
 	srand(time(NULL));
 	//Обнуление полей игроков
@@ -122,1873 +119,7 @@ regenerate:
 			EnemyField[i][j] = 0;
 		}
 	}
-	//system("cls");
-	//Генерация кораблей Игрока
-	//struct Battleship PlayerBattleship;
-	short int x1 = -1, x2 = -1, x3 = -1, x4 = -1, y1 = -1, y2 = -1, y3 = -1, y4 = -1;
-	x1 = (rand() % 10) * 2 + 1;
-	y1 = rand() % 10;
-	short int x = rand() % 4;
-	while (x2 == -1 || x3 == -1 || x4 == -1 || y2 == -1 || y3 == -1 || y4 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-					if (y3 - 1 >= 0) {//Если можно вверх
-						x4 = x3;
-						y4 = y3 - 1;
-					}
-					else {//Если нельзя вверх идём вниз
-						x4 = x3;
-						y4 = y1 + 1;
-					}
-				}
-				else {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-					x4 = x3;
-					y4 = y3 + 1;
-				}
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-					if (x3 + 2 <= 20) {//Если можно вправо
-						y4 = y3;
-						x4 = x3 + 2;
-					}
-					else {//Если нельзя вправо идём влево
-						y4 = y3;
-						x4 = x1 - 2;
-					}
-				}
-				else {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-					y4 = y3;
-					x4 = x3 - 2;
-				}
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-					if (y3 + 1 < 10) {//Если можно вниз
-						x4 = x3;
-						y4 = y3 + 1;
-					}
-					else {//Если нельзя вниз идём вверх
-						x4 = x3;
-						y4 = y1 - 1;
-					}
-				}
-				else {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-					x4 = x3;
-					y4 = y3 - 1;
-				}
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-					if (x3 - 2 >= 0) {//Если можно влево
-						y4 = y3;
-						x4 = x3 - 2;
-					}
-					else {//Если нельзя влево идём вправо
-						y4 = y3;
-						x4 = x1 + 2;
-					}
-				}
-				else {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-					y4 = y3;
-					x4 = x3 + 2;
-				}
-			}
-			else x = 0;
-		}
-	}
-	PlayerBattleship.x1 = x1; PlayerBattleship.y1 = y1;
-	PlayerBattleship.x2 = x2; PlayerBattleship.y2 = y2;
-	PlayerBattleship.x3 = x3; PlayerBattleship.y3 = y3;
-	PlayerBattleship.x4 = x4; PlayerBattleship.y4 = y4;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	PlayerField[y3][x3] = 2;
-	PlayerField[y4][x4] = 2;
-
-	if (PlayerBattleship.x1 == PlayerBattleship.x2 && PlayerBattleship.x1 == PlayerBattleship.x3 && PlayerBattleship.x1 == PlayerBattleship.x4) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			PlayerField[y3][x1 - 1] = 3;
-			PlayerField[y4][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-				PlayerField[y3][x1 - 2] = 4;
-				PlayerField[y4][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			PlayerField[y3][x1 + 1] = 3;
-			PlayerField[y4][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-				PlayerField[y3][x1 + 2] = 4;
-				PlayerField[y4][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-		if (min > y4)min = y4; if (max < y4)max = y4;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerBattleship.y1 == y2 && PlayerBattleship.y1 == y3 && PlayerBattleship.y1 == y4) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-			PlayerField[y1 - 1][x3] = 4;
-			PlayerField[y1 - 1][x4] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-			PlayerField[y1 + 1][x3] = 4;
-			PlayerField[y1 + 1][x4] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-		if (min > x4)min = x4; if (max < x4)max = x4;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Cruiser PlayerCruiser1;
-againPlayerCruiser1:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	x = rand() % 4;
-	bool once = false;
-	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && PlayerField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0 && PlayerField[y2 - 1][x1] != 4) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-				}
-				else if (PlayerField[y1 + 1][x1] != 4) {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-				}
-				else goto againPlayerCruiser1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && PlayerField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20 && PlayerField[y1][x2 + 2] != 4) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-				}
-				else if (PlayerField[y1][x1 - 2] != 4) {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-				}
-				else goto againPlayerCruiser1;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && PlayerField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10 && PlayerField[y2 + 1][x1] != 4) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-				}
-				else if (PlayerField[y1 - 1][x1] != 4) {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-				}
-				else goto againPlayerCruiser1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && PlayerField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0 && PlayerField[y1][x2 - 2] != 4) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-				}
-				else if (PlayerField[y1][x1 + 2] != 4) {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-				}
-				else goto againPlayerCruiser1;
-			}
-			else {
-				if (once)goto againPlayerCruiser1;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	PlayerCruiser1.x1 = x1; PlayerCruiser1.y1 = y1;
-	PlayerCruiser1.x2 = x2; PlayerCruiser1.y2 = y2;
-	PlayerCruiser1.x3 = x3; PlayerCruiser1.y3 = y3;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	PlayerField[y3][x3] = 2;
-	if (PlayerCruiser1.x1 == PlayerCruiser1.x2 && PlayerCruiser1.x1 == PlayerCruiser1.x3) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			PlayerField[y3][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-				PlayerField[y3][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			PlayerField[y3][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-				PlayerField[y3][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerCruiser1.y1 == PlayerCruiser1.y2 && PlayerCruiser1.y1 == PlayerCruiser1.y3) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-			PlayerField[y1 - 1][x3] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-			PlayerField[y1 + 1][x3] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Cruiser PlayerCruiser2;
-againPlayerCruiser2:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && PlayerField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0 && PlayerField[y2 - 1][x1] != 4) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-				}
-				else if (PlayerField[y1 + 1][x1] != 4) {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-				}
-				else goto againPlayerCruiser2;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && PlayerField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20 && PlayerField[y1][x2 + 2] != 4) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-				}
-				else if (PlayerField[y1][x1 - 2] != 4) {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-				}
-				else goto againPlayerCruiser2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && PlayerField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10 && PlayerField[y2 + 1][x1] != 4) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-				}
-				else if (PlayerField[y1 - 1][x1] != 4) {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-				}
-				else goto againPlayerCruiser2;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && PlayerField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0 && PlayerField[y1][x2 - 2] != 4) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-				}
-				else if (PlayerField[y1][x1 + 2] != 4) {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-				}
-				else goto againPlayerCruiser2;
-			}
-			else {
-				if (once)goto againPlayerCruiser2;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	PlayerCruiser2.x1 = x1; PlayerCruiser2.y1 = y1;
-	PlayerCruiser2.x2 = x2; PlayerCruiser2.y2 = y2;
-	PlayerCruiser2.x3 = x3; PlayerCruiser2.y3 = y3;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	PlayerField[y3][x3] = 2;
-	if (PlayerCruiser2.x1 == PlayerCruiser2.x2 && PlayerCruiser2.x1 == PlayerCruiser2.x3) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			PlayerField[y3][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-				PlayerField[y3][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			PlayerField[y3][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-				PlayerField[y3][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerCruiser2.y1 == PlayerCruiser2.y2 && PlayerCruiser2.y1 == PlayerCruiser2.y3) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-			PlayerField[y1 - 1][x3] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-			PlayerField[y1 + 1][x3] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer PlayerDestroyer1;
-againPlayerDestroyer1:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && PlayerField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && PlayerField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && PlayerField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && PlayerField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againPlayerDestroyer1;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	PlayerDestroyer1.x1 = x1; PlayerDestroyer1.y1 = y1;
-	PlayerDestroyer1.x2 = x2; PlayerDestroyer1.y2 = y2;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	if (PlayerDestroyer1.x1 == PlayerDestroyer1.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerDestroyer1.y1 == PlayerDestroyer1.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer PlayerDestroyer2;
-againPlayerDestroyer2:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && PlayerField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && PlayerField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && PlayerField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && PlayerField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againPlayerDestroyer2;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	PlayerDestroyer2.x1 = x1; PlayerDestroyer2.y1 = y1;
-	PlayerDestroyer2.x2 = x2; PlayerDestroyer2.y2 = y2;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	if (PlayerDestroyer2.x1 == PlayerDestroyer2.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerDestroyer2.y1 == PlayerDestroyer2.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer PlayerDestroyer3;
-againPlayerDestroyer3:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && PlayerField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && PlayerField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && PlayerField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && PlayerField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againPlayerDestroyer3;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	PlayerDestroyer3.x1 = x1; PlayerDestroyer3.y1 = y1;
-	PlayerDestroyer3.x2 = x2; PlayerDestroyer3.y2 = y2;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-	if (PlayerDestroyer3.x1 == PlayerDestroyer3.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			PlayerField[y1][x1 - 1] = 3;
-			PlayerField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				PlayerField[y1][x1 - 2] = 4;
-				PlayerField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			PlayerField[y1][x1 + 1] = 3;
-			PlayerField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				PlayerField[y1][x1 + 2] = 4;
-				PlayerField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			PlayerField[min - 1][x1 - 2] = 4;
-			PlayerField[min - 1][x1] = 4;
-			PlayerField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			PlayerField[max + 1][x1 - 2] = 4;
-			PlayerField[max + 1][x1] = 4;
-			PlayerField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (PlayerDestroyer3.y1 == PlayerDestroyer3.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			PlayerField[y1 - 1][x1] = 4;
-			PlayerField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			PlayerField[y1 + 1][x1] = 4;
-			PlayerField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			PlayerField[y1 - 1][min - 2] = 4;
-			PlayerField[y1][min - 2] = 4;
-			PlayerField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			PlayerField[y1 - 1][max + 2] = 4;
-			PlayerField[y1][max + 2] = 4;
-			PlayerField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Speedboat PlayerSpeedboat1;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	PlayerSpeedboat1.x = x1; PlayerSpeedboat1.y = y1;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)PlayerField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)PlayerField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)PlayerField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)PlayerField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)PlayerField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)PlayerField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)PlayerField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)PlayerField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
-
-	//struct Speedboat PlayerSpeedboat2;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	PlayerSpeedboat2.x = x1; PlayerSpeedboat2.y = y1;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)PlayerField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)PlayerField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)PlayerField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)PlayerField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)PlayerField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)PlayerField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)PlayerField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)PlayerField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
-
-	//struct Speedboat PlayerSpeedboat3;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	PlayerSpeedboat3.x = x1; PlayerSpeedboat3.y = y1;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)PlayerField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)PlayerField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)PlayerField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)PlayerField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)PlayerField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)PlayerField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)PlayerField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)PlayerField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
-
-	//struct Speedboat PlayerSpeedboat4;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (PlayerField[y1][x1] != 0);
-	PlayerSpeedboat4.x = x1; PlayerSpeedboat4.y = y1;
-	PlayerField[y1][x1] = 2;
-	PlayerField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)PlayerField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)PlayerField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)PlayerField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)PlayerField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)PlayerField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)PlayerField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)PlayerField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)PlayerField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
-
-
-
-	//Генерация кораблей Противника
-	//struct Battleship EnemyBattleship;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	x1 = (rand() % 10) * 2 + 1;
-	y1 = rand() % 10;
-	x = rand() % 4;
-	while (x2 == -1 || x3 == -1 || x4 == -1 || y2 == -1 || y3 == -1 || y4 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-					if (y3 - 1 >= 0) {//Если можно вверх
-						x4 = x3;
-						y4 = y3 - 1;
-					}
-					else {//Если нельзя вверх идём вниз
-						x4 = x3;
-						y4 = y1 + 1;
-					}
-				}
-				else {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-					x4 = x3;
-					y4 = y3 + 1;
-				}
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-					if (x3 + 2 <= 20) {//Если можно вправо
-						y4 = y3;
-						x4 = x3 + 2;
-					}
-					else {//Если нельзя вправо идём влево
-						y4 = y3;
-						x4 = x1 - 2;
-					}
-				}
-				else {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-					y4 = y3;
-					x4 = x3 - 2;
-				}
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-					if (y3 + 1 < 10) {//Если можно вниз
-						x4 = x3;
-						y4 = y3 + 1;
-					}
-					else {//Если нельзя вниз идём вверх
-						x4 = x3;
-						y4 = y1 - 1;
-					}
-				}
-				else {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-					x4 = x3;
-					y4 = y3 - 1;
-				}
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-					if (x3 - 2 >= 0) {//Если можно влево
-						y4 = y3;
-						x4 = x3 - 2;
-					}
-					else {//Если нельзя влево идём вправо
-						y4 = y3;
-						x4 = x1 + 2;
-					}
-				}
-				else {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-					y4 = y3;
-					x4 = x3 + 2;
-				}
-			}
-			else x = 0;
-		}
-	}
-	EnemyBattleship.x1 = x1; EnemyBattleship.y1 = y1;
-	EnemyBattleship.x2 = x2; EnemyBattleship.y2 = y2;
-	EnemyBattleship.x3 = x3; EnemyBattleship.y3 = y3;
-	EnemyBattleship.x4 = x4; EnemyBattleship.y4 = y4;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	EnemyField[y3][x3] = 2;
-	EnemyField[y4][x4] = 2;
-	if (EnemyBattleship.x1 == EnemyBattleship.x2 && EnemyBattleship.x1 == EnemyBattleship.x3 && EnemyBattleship.x1 == EnemyBattleship.x4) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			EnemyField[y3][x1 - 1] = 3;
-			EnemyField[y4][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-				EnemyField[y3][x1 - 2] = 4;
-				EnemyField[y4][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			EnemyField[y3][x1 + 1] = 3;
-			EnemyField[y4][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-				EnemyField[y3][x1 + 2] = 4;
-				EnemyField[y4][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-		if (min > y4)min = y4; if (max < y4)max = y4;
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyBattleship.y1 == EnemyBattleship.y2 && EnemyBattleship.y1 == EnemyBattleship.y3 && EnemyBattleship.y1 == EnemyBattleship.y4) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-			EnemyField[y1 - 1][x3] = 4;
-			EnemyField[y1 - 1][x4] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-			EnemyField[y1 + 1][x3] = 4;
-			EnemyField[y1 + 1][x4] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-		if (min > x4)min = x4; if (max < x4)max = x4;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Cruiser EnemyCruiser1;
-againEnemyCruiser1:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && EnemyField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0 && EnemyField[y2 - 1][x1] != 4) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-				}
-				else if (EnemyField[y1 + 1][x1] != 4) {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-				}
-				else goto againEnemyCruiser1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && EnemyField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20 && EnemyField[y1][x2 + 2] != 4) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-				}
-				else if (EnemyField[y1][x1 - 2] != 4) {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-				}
-				else goto againEnemyCruiser1;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && EnemyField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10 && EnemyField[y2 + 1][x1] != 4) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-				}
-				else if (EnemyField[y1 - 1][x1] != 4) {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-				}
-				else goto againEnemyCruiser1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && EnemyField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0 && EnemyField[y1][x2 - 2] != 4) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-				}
-				else if (EnemyField[y1][x1 + 2] != 4) {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-				}
-				else goto againEnemyCruiser1;
-			}
-			else {
-				if (once)goto againEnemyCruiser1;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	EnemyCruiser1.x1 = x1; EnemyCruiser1.y1 = y1;
-	EnemyCruiser1.x2 = x2; EnemyCruiser1.y2 = y2;
-	EnemyCruiser1.x3 = x3; EnemyCruiser1.y3 = y3;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	EnemyField[y3][x3] = 2;
-	if (EnemyCruiser1.x1 == EnemyCruiser1.x2 && EnemyCruiser1.x1 == EnemyCruiser1.x3) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			EnemyField[y3][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-				EnemyField[y3][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			EnemyField[y3][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-				EnemyField[y3][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyCruiser1.y1 == EnemyCruiser1.y2 && EnemyCruiser1.y1 == EnemyCruiser1.y3) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-			EnemyField[y1 - 1][x3] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-			EnemyField[y1 + 1][x3] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Cruiser EnemyCruiser2;
-againEnemyCruiser2:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && EnemyField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-				if (y2 - 1 >= 0 && EnemyField[y2 - 1][x1] != 4) {//Если можно вверх
-					x3 = x2;
-					y3 = y2 - 1;
-				}
-				else if (EnemyField[y1 + 1][x1] != 4) {//Если нельзя вверх идём вниз
-					x3 = x2;
-					y3 = y1 + 1;
-				}
-				else goto againEnemyCruiser2;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && EnemyField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-				if (x2 + 2 <= 20 && EnemyField[y1][x2 + 2] != 4) {//Если можно вправо
-					y3 = y2;
-					x3 = x2 + 2;
-				}
-				else if (EnemyField[y1][x1 - 2] != 4) {//Если нельзя вправо идём влево
-					y3 = y2;
-					x3 = x1 - 2;
-				}
-				else goto againEnemyCruiser2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && EnemyField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-				if (y2 + 1 < 10 && EnemyField[y2 + 1][x1] != 4) {//Если можно вниз
-					x3 = x2;
-					y3 = y2 + 1;
-				}
-				else if (EnemyField[y1 - 1][x1] != 4) {//Если нельзя вниз идём вверх
-					x3 = x2;
-					y3 = y1 - 1;
-				}
-				else goto againEnemyCruiser2;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && EnemyField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-				if (x2 - 2 >= 0 && EnemyField[y1][x2 - 2] != 4) {//Если можно влево
-					y3 = y2;
-					x3 = x2 - 2;
-				}
-				else if (EnemyField[y1][x1 + 2] != 4) {//Если нельзя влево идём вправо
-					y3 = y2;
-					x3 = x1 + 2;
-				}
-				else goto againEnemyCruiser2;
-			}
-			else {
-				if (once)goto againEnemyCruiser2;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	EnemyCruiser2.x1 = x1; EnemyCruiser2.y1 = y1;
-	EnemyCruiser2.x2 = x2; EnemyCruiser2.y2 = y2;
-	EnemyCruiser2.x3 = x3; EnemyCruiser2.y3 = y3;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	EnemyField[y3][x3] = 2;
-	if (EnemyCruiser2.x1 == EnemyCruiser2.x2 && EnemyCruiser2.x1 == EnemyCruiser2.x3) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			EnemyField[y3][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-				EnemyField[y3][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			EnemyField[y3][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-				EnemyField[y3][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-		if (min > y3)min = y3; if (max < y3)max = y3;
-
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyCruiser2.y1 == EnemyCruiser2.y2 && EnemyCruiser2.y1 == EnemyCruiser2.y3) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-			EnemyField[y1 - 1][x3] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-			EnemyField[y1 + 1][x3] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-		if (min > x3)min = x3; if (max < x3)max = x3;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer EnemyDestroyer1;
-againEnemyDestroyer1:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && EnemyField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && EnemyField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && EnemyField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && EnemyField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againEnemyDestroyer1;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	EnemyDestroyer1.x1 = x1; EnemyDestroyer1.y1 = y1;
-	EnemyDestroyer1.x2 = x2; EnemyDestroyer1.y2 = y2;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	if (EnemyDestroyer1.x1 == EnemyDestroyer1.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyDestroyer1.y1 == EnemyDestroyer1.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer EnemyDestroyer2;
-againEnemyDestroyer2:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && EnemyField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && EnemyField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && EnemyField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && EnemyField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againEnemyDestroyer2;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	EnemyDestroyer2.x1 = x1; EnemyDestroyer2.y1 = y1;
-	EnemyDestroyer2.x2 = x2; EnemyDestroyer2.y2 = y2;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	if (EnemyDestroyer2.x1 == EnemyDestroyer2.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyDestroyer2.y1 == EnemyDestroyer2.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Destroyer EnemyDestroyer3;
-againEnemyDestroyer3:
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	x = rand() % 4;
-	once = false;
-	while (x2 == -1 || y2 == -1) {
-		if (x == 0) {//вверх
-			if (y1 - 1 >= 0 && EnemyField[y1 - 1][x1] != 4) {//Если можно вверх
-				x2 = x1;
-				y2 = y1 - 1;
-			}
-			else x++;
-		}
-		if (x == 1) {//вправо
-			if (x1 + 2 <= 20 && EnemyField[y1][x1 + 2] != 4) {//Если можно вправо
-				y2 = y1;
-				x2 = x1 + 2;
-			}
-			else x++;
-		}
-		if (x == 2) {//вниз
-			if (y1 + 1 < 10 && EnemyField[y1 + 1][x1] != 4) {//Если можно вниз
-				x2 = x1;
-				y2 = y1 + 1;
-			}
-			else x++;
-		}
-		if (x == 3) {//влево
-			if (x1 - 2 >= 0 && EnemyField[y1][x1 - 2] != 4) {//Если можно влево
-				y2 = y1;
-				x2 = x1 - 2;
-			}
-			else {
-				if (once)goto againEnemyDestroyer3;
-				once = true;
-				x = 0;
-			}
-		}
-	}
-	EnemyDestroyer3.x1 = x1; EnemyDestroyer3.y1 = y1;
-	EnemyDestroyer3.x2 = x2; EnemyDestroyer3.y2 = y2;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-	if (EnemyDestroyer3.x1 == EnemyDestroyer3.x2) {//Вертикально расположен
-		if (x1 - 1 >= 0) {
-			EnemyField[y1][x1 - 1] = 3;
-			EnemyField[y2][x1 - 1] = 3;
-			if (x1 - 2 >= 0) {
-				EnemyField[y1][x1 - 2] = 4;
-				EnemyField[y2][x1 - 2] = 4;
-			}
-		}
-		if (x1 + 1 <= 20) {
-			EnemyField[y1][x1 + 1] = 3;
-			EnemyField[y2][x1 + 1] = 3;
-			if (x1 + 2 <= 20) {
-				EnemyField[y1][x1 + 2] = 4;
-				EnemyField[y2][x1 + 2] = 4;
-			}
-		}
-		//Крайние точки корабля
-		short int min = y1;//Верхняя точка
-		short int max = y1;//Нижняя точка
-		if (min > y2)min = y2; if (max < y2)max = y2;
-
-		if (min - 1 >= 0) {
-			EnemyField[min - 1][x1 - 2] = 4;
-			EnemyField[min - 1][x1] = 4;
-			EnemyField[min - 1][x1 + 2] = 4;
-		}
-		if (max + 1 < 10) {
-			EnemyField[max + 1][x1 - 2] = 4;
-			EnemyField[max + 1][x1] = 4;
-			EnemyField[max + 1][x1 + 2] = 4;
-		}
-	}
-	else if (EnemyDestroyer3.y1 == EnemyDestroyer3.y2) {//Горизонтально расположен
-		if (y1 - 1 >= 0) {
-			EnemyField[y1 - 1][x1] = 4;
-			EnemyField[y1 - 1][x2] = 4;
-		}
-		if (y1 + 1 < 10) {
-			EnemyField[y1 + 1][x1] = 4;
-			EnemyField[y1 + 1][x2] = 4;
-		}
-		//Крайние точки корабля
-		short int min = x1;//Левая точка
-		short int max = x1;//Правая точка
-		if (min > x2)min = x2; if (max < x2)max = x2;
-
-		if (min - 2 >= 0) {
-			EnemyField[y1 - 1][min - 2] = 4;
-			EnemyField[y1][min - 2] = 4;
-			EnemyField[y1 + 1][min - 2] = 4;
-		}
-		if (max + 2 <= 20) {
-			EnemyField[y1 - 1][max + 2] = 4;
-			EnemyField[y1][max + 2] = 4;
-			EnemyField[y1 + 1][max + 2] = 4;
-		}
-	}
-	else cout << "Error rotation\n";
-
-	//struct Speedboat EnemySpeedboat1;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	EnemySpeedboat1.x = x1; EnemySpeedboat1.y = y1;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)EnemyField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)EnemyField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)EnemyField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)EnemyField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)EnemyField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)EnemyField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)EnemyField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)EnemyField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)EnemyField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)EnemyField[y1][x1 + 1] = 3;
-
-	//struct Speedboat EnemySpeedboat2;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	EnemySpeedboat2.x = x1; EnemySpeedboat2.y = y1;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)EnemyField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)EnemyField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)EnemyField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)EnemyField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)EnemyField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)EnemyField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)EnemyField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)EnemyField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)EnemyField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)EnemyField[y1][x1 + 1] = 3;
-
-	//struct Speedboat EnemySpeedboat3;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	EnemySpeedboat3.x = x1; EnemySpeedboat3.y = y1;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)EnemyField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)EnemyField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)EnemyField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)EnemyField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)EnemyField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)EnemyField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)EnemyField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)EnemyField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)EnemyField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)EnemyField[y1][x1 + 1] = 3;
-
-	//struct Speedboat EnemySpeedboat4;
-	x1 = -1; x2 = -1; x3 = -1; x4 = -1; y1 = -1; y2 = -1; y3 = -1; y4 = -1;
-	do {
-		x1 = (rand() % 10) * 2 + 1;
-		y1 = rand() % 10;
-	} while (EnemyField[y1][x1] != 0);
-	EnemySpeedboat4.x = x1; EnemySpeedboat4.y = y1;
-	EnemyField[y1][x1] = 2;
-	EnemyField[y2][x2] = 2;
-
-	if (y1 - 1 >= 0 && x1 - 2 >= 0)EnemyField[y1 - 1][x1 - 2] = 4;
-	if (y1 - 1 >= 0)EnemyField[y1 - 1][x1] = 4;
-	if (y1 - 1 >= 0 && x1 + 2 <= 20)EnemyField[y1 - 1][x1 + 2] = 4;
-	if (x1 - 2 >= 0)EnemyField[y1][x1 - 2] = 4;
-	if (x1 + 2 <= 20)EnemyField[y1][x1 + 2] = 4;
-	if (y1 + 1 < 10 && x1 - 2 >= 0)EnemyField[y1 + 1][x1 - 2] = 4;
-	if (y1 + 1 < 10)EnemyField[y1 + 1][x1] = 4;
-	if (y1 + 1 < 10 && x1 + 2 <= 20)EnemyField[y1 + 1][x1 + 2] = 4;
-
-	if (x1 - 1 >= 0)EnemyField[y1][x1 - 1] = 3;
-	if (x1 + 1 <= 20)EnemyField[y1][x1 + 1] = 3;
-
-
-	//доп проверка поля
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 21; j++) {
-			if (EnemyField[i][j] == 2)EnemyField[i][j] = 0;
-			if (PlayerField[i][j] == 2)PlayerField[i][j] = 0;
-		}
-	}
-	EnemyField[EnemyBattleship.y1][EnemyBattleship.x1] = 2;
-	EnemyField[EnemyBattleship.y2][EnemyBattleship.x2] = 2;
-	EnemyField[EnemyBattleship.y3][EnemyBattleship.x3] = 2;
-	EnemyField[EnemyBattleship.y4][EnemyBattleship.x4] = 2;
-	EnemyField[EnemyCruiser1.y1][EnemyCruiser1.x1] = 2;
-	EnemyField[EnemyCruiser1.y2][EnemyCruiser1.x2] = 2;
-	EnemyField[EnemyCruiser1.y3][EnemyCruiser1.x3] = 2;
-	EnemyField[EnemyCruiser2.y1][EnemyCruiser2.x1] = 2;
-	EnemyField[EnemyCruiser2.y2][EnemyCruiser2.x2] = 2;
-	EnemyField[EnemyCruiser2.y3][EnemyCruiser2.x3] = 2;
-	EnemyField[EnemyDestroyer1.y1][EnemyDestroyer1.x1] = 2;
-	EnemyField[EnemyDestroyer1.y2][EnemyDestroyer1.x2] = 2;
-	EnemyField[EnemyDestroyer2.y1][EnemyDestroyer2.x1] = 2;
-	EnemyField[EnemyDestroyer2.y2][EnemyDestroyer2.x2] = 2;
-	EnemyField[EnemyDestroyer3.y1][EnemyDestroyer3.x1] = 2;
-	EnemyField[EnemyDestroyer3.y2][EnemyDestroyer3.x2] = 2;
-	EnemyField[EnemySpeedboat1.y][EnemySpeedboat1.x] = 2;
-	EnemyField[EnemySpeedboat2.y][EnemySpeedboat2.x] = 2;
-	EnemyField[EnemySpeedboat3.y][EnemySpeedboat3.x] = 2;
-	EnemyField[EnemySpeedboat4.y][EnemySpeedboat4.x] = 2;
-
-	PlayerField[PlayerBattleship.y1][PlayerBattleship.x1] = 2;
-	PlayerField[PlayerBattleship.y2][PlayerBattleship.x2] = 2;
-	PlayerField[PlayerBattleship.y3][PlayerBattleship.x3] = 2;
-	PlayerField[PlayerBattleship.y4][PlayerBattleship.x4] = 2;
-	PlayerField[PlayerCruiser1.y1][PlayerCruiser1.x1] = 2;
-	PlayerField[PlayerCruiser1.y2][PlayerCruiser1.x2] = 2;
-	PlayerField[PlayerCruiser1.y3][PlayerCruiser1.x3] = 2;
-	PlayerField[PlayerCruiser2.y1][PlayerCruiser2.x1] = 2;
-	PlayerField[PlayerCruiser2.y2][PlayerCruiser2.x2] = 2;
-	PlayerField[PlayerCruiser2.y3][PlayerCruiser2.x3] = 2;
-	PlayerField[PlayerDestroyer1.y1][PlayerDestroyer1.x1] = 2;
-	PlayerField[PlayerDestroyer1.y2][PlayerDestroyer1.x2] = 2;
-	PlayerField[PlayerDestroyer2.y1][PlayerDestroyer2.x1] = 2;
-	PlayerField[PlayerDestroyer2.y2][PlayerDestroyer2.x2] = 2;
-	PlayerField[PlayerDestroyer3.y1][PlayerDestroyer3.x1] = 2;
-	PlayerField[PlayerDestroyer3.y2][PlayerDestroyer3.x2] = 2;
-	PlayerField[PlayerSpeedboat1.y][PlayerSpeedboat1.x] = 2;
-	PlayerField[PlayerSpeedboat2.y][PlayerSpeedboat2.x] = 2;
-	PlayerField[PlayerSpeedboat3.y][PlayerSpeedboat3.x] = 2;
-	PlayerField[PlayerSpeedboat4.y][PlayerSpeedboat4.x] = 2;
-
+	if(!generateBoats())goto regenerate;
 	bool checkBoatsOnce = true;
 	if (checkBoatsOnce) {//Проверка на создание всех кораблей
 		checkBoatsOnce = false;
@@ -1999,6 +130,7 @@ againEnemyDestroyer3:
 			}
 		}
 		if (u != 20) {
+			cout << "Regeneration Player value=" << u << endl;
 			goto regenerate;
 		}
 		u = 0;
@@ -2008,20 +140,21 @@ againEnemyDestroyer3:
 			}
 		}
 		if (u != 20) {
+			cout << "Regeneration Enemy value=" << u << endl;
 			goto regenerate;
 		}
 	}
 	//Вывод на экран
 	PrintFields();
 
-	once = true;
+	bool once = true;
 	bool CanLastItitiate = true;
 	short int WhatsWay = -1;
 	short int strikeCounter = 0;
 	short int lastx = -1, lasty = -1;
 	bool lastMiss = false;
 	int y = 0;
-	x = 1;
+	short int x = 1;
 	short int goalx = 1, goaly = 0;
 	bool chet = false;
 	bool turn = rand() % 2;//true значит мы ходим, false значит противник ходит.
@@ -2038,50 +171,61 @@ againEnemyDestroyer3:
 			againCin:
 				cout << "Ваш ход: ";
 			}
-			string choose = "";
+			string choose;
 			cin >> choose;
-			char symbol = choose[0];
-			if (choose.size() <= 1)goto readError;
-			if (choose.size() > 3 || (choose[2] != '0' && choose.size() == 3))goto readError;
+			int symbol = choose[0] + choose[1];
+			if (choose.size() <= 2)goto readError;
+			if (choose.size() > 4)goto readError;
+			if (choose.size() == 4 && choose[3] != '0')goto readError;
 			int x = 0;
 			switch (symbol) {
 			case -128:
+			case -160:
 				x = 1;
 				break;
 			case -127:
+			case -159:
 				x = 3;
 				break;
 			case -126:
+			case -158:
 				x = 5;
 				break;
 			case -125:
+			case -157:
 				x = 7;
 				break;
 			case -124:
+			case -156:
 				x = 9;
 				break;
 			case -123:
+			case -155:
 				x = 11;
 				break;
 			case -122:
+			case -154:
 				x = 13;
 				break;
 			case -121:
+			case -153:
 				x = 15;
 				break;
 			case -120:
+			case -152:
 				x = 17;
 				break;
 			case -118:
+			case -150:
 				x = 19;
 				break;
 			default:
 				goto readError;
 			}
-			for (int i = 1; i < choose.size(); i++) {
-				choose[i - 1] = choose[i];
+			for (int i = 2; i < choose.size(); i++) {
+				choose[i - 2] = choose[i];
 			}
-			choose[choose.size() - 1] = '\0';
+			choose[choose.size() - 2] = '\0';
 			int y = stoi(choose) - 1;
 			if (y < 0 && y > 10) goto readError;
 
@@ -2606,7 +750,7 @@ void PrintFields() {
 					cout << ' ';//Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (cheat.readcheats() && state == 0 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
+				else if (cheats && state == 0 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
 					cout << ' ';//Живая лодка (зелёный)
@@ -2619,7 +763,7 @@ void PrintFields() {
 				PlayerMissCounter++;
 			}
 			else if (state == 2) {
-				if (cheat.readcheats()) {
+				if (cheats) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
 					cout << ' ';//Живая лодка (зелёный)
@@ -2630,7 +774,7 @@ void PrintFields() {
 			}
 			else if (state == 3) {
 				if (EnemyField[y][x - 1] == 6 || EnemyField[y][x + 1] == 6)cout << '|';
-				else if (cheat.readcheats())cout << '|';//Граница лодки
+				else if (cheats)cout << '|';//Граница лодки
 				else cout << ' ';
 			}
 			else if (state == 5) {
@@ -3028,9 +1172,9 @@ bool check(struct Destroyer& boat, short int(&Field)[10][21]) {
 	return false;
 }
 bool check(struct Speedboat& boat, short int(&Field)[10][21]) {
-	if (Field[boat.y][boat.x] == 5) {
+	if (Field[boat.y1][boat.x1] == 5) {
 		boat.dead = true;
-		Field[boat.y][boat.x] = 6;
+		Field[boat.y1][boat.x1] = 6;
 	}
 	if (boat.dead == true)return true;
 	return false;
@@ -3353,8 +1497,8 @@ void setState7(struct Destroyer Destroyer) {
 	else cout << "Error rotation\n";
 }
 void setState7(struct Speedboat Speedboat) {
-	int x1 = Speedboat.x;
-	int y1 = Speedboat.y;
+	int x1 = Speedboat.x1;
+	int y1 = Speedboat.y1;
 	if (y1 - 1 >= 0 && x1 - 2 >= 0)if (PlayerField[y1 - 1][x1 - 2] != 1)PlayerField[y1 - 1][x1 - 2] = 7;
 	if (y1 - 1 >= 0)if (PlayerField[y1 - 1][x1] != 1)PlayerField[y1 - 1][x1] = 7;
 	if (y1 - 1 >= 0 && x1 + 2 <= 20)if (PlayerField[y1 - 1][x1 + 2] != 1)PlayerField[y1 - 1][x1 + 2] = 7;
@@ -3366,4 +1510,503 @@ void setState7(struct Speedboat Speedboat) {
 
 	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
 	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
+}
+void generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
+	short int x1 = -1, x2 = -1, x3 = -1, x4 = -1, y1 = -1, y2 = -1, y3 = -1, y4 = -1;
+	x1 = (rand() % 10) * 2 + 1;
+	y1 = rand() % 10;
+	short int x = rand() % 4;
+	while (x2 == -1 || x3 == -1 || x4 == -1 || y2 == -1 || y3 == -1 || y4 == -1) {
+		if (x == 0) {//вверх
+			if (y1 - 1 >= 0) {//Если можно вверх
+				x2 = x1;
+				y2 = y1 - 1;
+				if (y2 - 1 >= 0) {//Если можно вверх
+					x3 = x2;
+					y3 = y2 - 1;
+					if (y3 - 1 >= 0) {//Если можно вверх
+						x4 = x3;
+						y4 = y3 - 1;
+					}
+					else {//Если нельзя вверх идём вниз
+						x4 = x3;
+						y4 = y1 + 1;
+					}
+				}
+				else {//Если нельзя вверх идём вниз
+					x3 = x2;
+					y3 = y1 + 1;
+					x4 = x3;
+					y4 = y3 + 1;
+				}
+			}
+			else x++;
+		}
+		if (x == 1) {//вправо
+			if (x1 + 2 <= 20) {//Если можно вправо
+				y2 = y1;
+				x2 = x1 + 2;
+				if (x2 + 2 <= 20) {//Если можно вправо
+					y3 = y2;
+					x3 = x2 + 2;
+					if (x3 + 2 <= 20) {//Если можно вправо
+						y4 = y3;
+						x4 = x3 + 2;
+					}
+					else {//Если нельзя вправо идём влево
+						y4 = y3;
+						x4 = x1 - 2;
+					}
+				}
+				else {//Если нельзя вправо идём влево
+					y3 = y2;
+					x3 = x1 - 2;
+					y4 = y3;
+					x4 = x3 - 2;
+				}
+			}
+			else x++;
+		}
+		if (x == 2) {//вниз
+			if (y1 + 1 < 10) {//Если можно вниз
+				x2 = x1;
+				y2 = y1 + 1;
+				if (y2 + 1 < 10) {//Если можно вниз
+					x3 = x2;
+					y3 = y2 + 1;
+					if (y3 + 1 < 10) {//Если можно вниз
+						x4 = x3;
+						y4 = y3 + 1;
+					}
+					else {//Если нельзя вниз идём вверх
+						x4 = x3;
+						y4 = y1 - 1;
+					}
+				}
+				else {//Если нельзя вниз идём вверх
+					x3 = x2;
+					y3 = y1 - 1;
+					x4 = x3;
+					y4 = y3 - 1;
+				}
+			}
+			else x++;
+		}
+		if (x == 3) {//влево
+			if (x1 - 2 >= 0) {//Если можно влево
+				y2 = y1;
+				x2 = x1 - 2;
+				if (x2 - 2 >= 0) {//Если можно влево
+					y3 = y2;
+					x3 = x2 - 2;
+					if (x3 - 2 >= 0) {//Если можно влево
+						y4 = y3;
+						x4 = x3 - 2;
+					}
+					else {//Если нельзя влево идём вправо
+						y4 = y3;
+						x4 = x1 + 2;
+					}
+				}
+				else {//Если нельзя влево идём вправо
+					y3 = y2;
+					x3 = x1 + 2;
+					y4 = y3;
+					x4 = x3 + 2;
+				}
+			}
+			else x = 0;
+		}
+	}
+	ship.x1 = x1; ship.y1 = y1;
+	ship.x2 = x2; ship.y2 = y2;
+	ship.x3 = x3; ship.y3 = y3;
+	ship.x4 = x4; ship.y4 = y4;
+	Field[y1][x1] = 2;
+	Field[y2][x2] = 2;
+	Field[y3][x3] = 2;
+	Field[y4][x4] = 2;
+
+	if (ship.x1 == ship.x2 && ship.x1 == ship.x3 && ship.x1 == ship.x4) {//Вертикально расположен
+		if (x1 - 1 >= 0) {
+			Field[y1][x1 - 1] = 3;
+			Field[y2][x1 - 1] = 3;
+			Field[y3][x1 - 1] = 3;
+			Field[y4][x1 - 1] = 3;
+			if (x1 - 2 >= 0) {
+				Field[y1][x1 - 2] = 4;
+				Field[y2][x1 - 2] = 4;
+				Field[y3][x1 - 2] = 4;
+				Field[y4][x1 - 2] = 4;
+			}
+		}
+		if (x1 + 1 <= 20) {
+			Field[y1][x1 + 1] = 3;
+			Field[y2][x1 + 1] = 3;
+			Field[y3][x1 + 1] = 3;
+			Field[y4][x1 + 1] = 3;
+			if (x1 + 2 <= 20) {
+				Field[y1][x1 + 2] = 4;
+				Field[y2][x1 + 2] = 4;
+				Field[y3][x1 + 2] = 4;
+				Field[y4][x1 + 2] = 4;
+			}
+		}
+		//Крайние точки корабля
+		short int min = y1;//Верхняя точка
+		short int max = y1;//Нижняя точка
+		if (min > y2)min = y2; if (max < y2)max = y2;
+		if (min > y3)min = y3; if (max < y3)max = y3;
+		if (min > y4)min = y4; if (max < y4)max = y4;
+
+		if (min - 1 >= 0) {
+			Field[min - 1][x1 - 2] = 4;
+			Field[min - 1][x1] = 4;
+			Field[min - 1][x1 + 2] = 4;
+		}
+		if (max + 1 < 10) {
+			Field[max + 1][x1 - 2] = 4;
+			Field[max + 1][x1] = 4;
+			Field[max + 1][x1 + 2] = 4;
+		}
+	}
+	else if (ship.y1 == y2 && ship.y1 == y3 && ship.y1 == y4) {//Горизонтально расположен
+		if (y1 - 1 >= 0) {
+			Field[y1 - 1][x1] = 4;
+			Field[y1 - 1][x2] = 4;
+			Field[y1 - 1][x3] = 4;
+			Field[y1 - 1][x4] = 4;
+		}
+		if (y1 + 1 < 10) {
+			Field[y1 + 1][x1] = 4;
+			Field[y1 + 1][x2] = 4;
+			Field[y1 + 1][x3] = 4;
+			Field[y1 + 1][x4] = 4;
+		}
+		//Крайние точки корабля
+		short int min = x1;//Левая точка
+		short int max = x1;//Правая точка
+		if (min > x2)min = x2; if (max < x2)max = x2;
+		if (min > x3)min = x3; if (max < x3)max = x3;
+		if (min > x4)min = x4; if (max < x4)max = x4;
+
+		if (min - 2 >= 0) {
+			Field[y1 - 1][min - 2] = 4;
+			Field[y1][min - 2] = 4;
+			Field[y1 + 1][min - 2] = 4;
+		}
+		if (max + 2 <= 20) {
+			Field[y1 - 1][max + 2] = 4;
+			Field[y1][max + 2] = 4;
+			Field[y1 + 1][max + 2] = 4;
+		}
+	}
+	else cout << "Error rotation\n";
+}
+bool generateCruiser(struct Cruiser& ship, short int(&Field)[10][21]) {
+	short int x1 = -1, x2 = -1, x3 = -1, y1 = -1, y2 = -1, y3 = -1;
+	do {
+		x1 = (rand() % 10) * 2 + 1;
+		y1 = rand() % 10;
+	} while (Field[y1][x1] != 0);
+	short int x = rand() % 4;
+	bool once = false;
+	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
+		if (x == 0) {//вверх
+			if (y1 - 1 >= 0 && Field[y1 - 1][x1] != 4) {//Если можно вверх
+				x2 = x1;
+				y2 = y1 - 1;
+				if (y2 - 1 >= 0 && Field[y2 - 1][x1] != 4) {//Если можно вверх
+					x3 = x2;
+					y3 = y2 - 1;
+				}
+				else if (Field[y1 + 1][x1] != 4) {//Если нельзя вверх идём вниз
+					x3 = x2;
+					y3 = y1 + 1;
+				}
+				else return false;
+			}
+			else x++;
+		}
+		if (x == 1) {//вправо
+			if (x1 + 2 <= 20 && Field[y1][x1 + 2] != 4) {//Если можно вправо
+				y2 = y1;
+				x2 = x1 + 2;
+				if (x2 + 2 <= 20 && Field[y1][x2 + 2] != 4) {//Если можно вправо
+					y3 = y2;
+					x3 = x2 + 2;
+				}
+				else if (Field[y1][x1 - 2] != 4) {//Если нельзя вправо идём влево
+					y3 = y2;
+					x3 = x1 - 2;
+				}
+				else return false;
+			}
+			else x++;
+		}
+		if (x == 2) {//вниз
+			if (y1 + 1 < 10 && Field[y1 + 1][x1] != 4) {//Если можно вниз
+				x2 = x1;
+				y2 = y1 + 1;
+				if (y2 + 1 < 10 && Field[y2 + 1][x1] != 4) {//Если можно вниз
+					x3 = x2;
+					y3 = y2 + 1;
+				}
+				else if (Field[y1 - 1][x1] != 4) {//Если нельзя вниз идём вверх
+					x3 = x2;
+					y3 = y1 - 1;
+				}
+				else return false;
+			}
+			else x++;
+		}
+		if (x == 3) {//влево
+			if (x1 - 2 >= 0 && Field[y1][x1 - 2] != 4) {//Если можно влево
+				y2 = y1;
+				x2 = x1 - 2;
+				if (x2 - 2 >= 0 && Field[y1][x2 - 2] != 4) {//Если можно влево
+					y3 = y2;
+					x3 = x2 - 2;
+				}
+				else if (Field[y1][x1 + 2] != 4) {//Если нельзя влево идём вправо
+					y3 = y2;
+					x3 = x1 + 2;
+				}
+				else return false;
+			}
+			else {
+				if (once)return false;
+				once = true;
+				x = 0;
+			}
+		}
+	}
+	ship.x1 = x1; ship.y1 = y1;
+	ship.x2 = x2; ship.y2 = y2;
+	ship.x3 = x3; ship.y3 = y3;
+	Field[y1][x1] = 2;
+	Field[y2][x2] = 2;
+	Field[y3][x3] = 2;
+	if (ship.x1 == ship.x2 && ship.x1 == ship.x3) {//Вертикально расположен
+		if (x1 - 1 >= 0) {
+			Field[y1][x1 - 1] = 3;
+			Field[y2][x1 - 1] = 3;
+			Field[y3][x1 - 1] = 3;
+			if (x1 - 2 >= 0) {
+				Field[y1][x1 - 2] = 4;
+				Field[y2][x1 - 2] = 4;
+				Field[y3][x1 - 2] = 4;
+			}
+		}
+		if (x1 + 1 <= 20) {
+			Field[y1][x1 + 1] = 3;
+			Field[y2][x1 + 1] = 3;
+			Field[y3][x1 + 1] = 3;
+			if (x1 + 2 <= 20) {
+				Field[y1][x1 + 2] = 4;
+				Field[y2][x1 + 2] = 4;
+				Field[y3][x1 + 2] = 4;
+			}
+		}
+		//Крайние точки корабля
+		short int min = y1;//Верхняя точка
+		short int max = y1;//Нижняя точка
+		if (min > y2)min = y2; if (max < y2)max = y2;
+		if (min > y3)min = y3; if (max < y3)max = y3;
+
+		if (min - 1 >= 0) {
+			Field[min - 1][x1 - 2] = 4;
+			Field[min - 1][x1] = 4;
+			Field[min - 1][x1 + 2] = 4;
+		}
+		if (max + 1 < 10) {
+			Field[max + 1][x1 - 2] = 4;
+			Field[max + 1][x1] = 4;
+			Field[max + 1][x1 + 2] = 4;
+		}
+	}
+	else if (ship.y1 == ship.y2 && ship.y1 == ship.y3) {//Горизонтально расположен
+		if (y1 - 1 >= 0) {
+			Field[y1 - 1][x1] = 4;
+			Field[y1 - 1][x2] = 4;
+			Field[y1 - 1][x3] = 4;
+		}
+		if (y1 + 1 < 10) {
+			Field[y1 + 1][x1] = 4;
+			Field[y1 + 1][x2] = 4;
+			Field[y1 + 1][x3] = 4;
+		}
+		//Крайние точки корабля
+		short int min = x1;//Левая точка
+		short int max = x1;//Правая точка
+		if (min > x2)min = x2; if (max < x2)max = x2;
+		if (min > x3)min = x3; if (max < x3)max = x3;
+
+		if (min - 2 >= 0) {
+			Field[y1 - 1][min - 2] = 4;
+			Field[y1][min - 2] = 4;
+			Field[y1 + 1][min - 2] = 4;
+		}
+		if (max + 2 <= 20) {
+			Field[y1 - 1][max + 2] = 4;
+			Field[y1][max + 2] = 4;
+			Field[y1 + 1][max + 2] = 4;
+		}
+	}
+	else cout << "Error rotation\n";
+	return true;
+}
+bool generateDestroyer(struct Destroyer& ship, short int(&Field)[10][21]) {
+	short int x1 = -1, x2 = -1, y1 = -1, y2 = -1;
+	do {
+		x1 = (rand() % 10) * 2 + 1;
+		y1 = rand() % 10;
+	} while (Field[y1][x1] != 0);
+	short int x = rand() % 4;
+	bool once = false;
+	while (x2 == -1 || y2 == -1) {
+		if (x == 0) {//вверх
+			if (y1 - 1 >= 0 && Field[y1 - 1][x1] != 4) {//Если можно вверх
+				x2 = x1;
+				y2 = y1 - 1;
+			}
+			else x++;
+		}
+		if (x == 1) {//вправо
+			if (x1 + 2 <= 20 && Field[y1][x1 + 2] != 4) {//Если можно вправо
+				y2 = y1;
+				x2 = x1 + 2;
+			}
+			else x++;
+		}
+		if (x == 2) {//вниз
+			if (y1 + 1 < 10 && Field[y1 + 1][x1] != 4) {//Если можно вниз
+				x2 = x1;
+				y2 = y1 + 1;
+			}
+			else x++;
+		}
+		if (x == 3) {//влево
+			if (x1 - 2 >= 0 && Field[y1][x1 - 2] != 4) {//Если можно влево
+				y2 = y1;
+				x2 = x1 - 2;
+			}
+			else {
+				if (once)return false;
+				once = true;
+				x = 0;
+			}
+		}
+	}
+	ship.x1 = x1; ship.y1 = y1;
+	ship.x2 = x2; ship.y2 = y2;
+	Field[y1][x1] = 2;
+	Field[y2][x2] = 2;
+	if (ship.x1 == ship.x2) {//Вертикально расположен
+		if (x1 - 1 >= 0) {
+			Field[y1][x1 - 1] = 3;
+			Field[y2][x1 - 1] = 3;
+			if (x1 - 2 >= 0) {
+				Field[y1][x1 - 2] = 4;
+				Field[y2][x1 - 2] = 4;
+			}
+		}
+		if (x1 + 1 <= 20) {
+			Field[y1][x1 + 1] = 3;
+			Field[y2][x1 + 1] = 3;
+			if (x1 + 2 <= 20) {
+				Field[y1][x1 + 2] = 4;
+				Field[y2][x1 + 2] = 4;
+			}
+		}
+		//Крайние точки корабля
+		short int min = y1;//Верхняя точка
+		short int max = y1;//Нижняя точка
+		if (min > y2)min = y2; if (max < y2)max = y2;
+
+		if (min - 1 >= 0) {
+			Field[min - 1][x1 - 2] = 4;
+			Field[min - 1][x1] = 4;
+			Field[min - 1][x1 + 2] = 4;
+		}
+		if (max + 1 < 10) {
+			Field[max + 1][x1 - 2] = 4;
+			Field[max + 1][x1] = 4;
+			Field[max + 1][x1 + 2] = 4;
+		}
+	}
+	else if (ship.y1 == ship.y2) {//Горизонтально расположен
+		if (y1 - 1 >= 0) {
+			Field[y1 - 1][x1] = 4;
+			Field[y1 - 1][x2] = 4;
+		}
+		if (y1 + 1 < 10) {
+			Field[y1 + 1][x1] = 4;
+			Field[y1 + 1][x2] = 4;
+		}
+		//Крайние точки корабля
+		short int min = x1;//Левая точка
+		short int max = x1;//Правая точка
+		if (min > x2)min = x2; if (max < x2)max = x2;
+
+		if (min - 2 >= 0) {
+			Field[y1 - 1][min - 2] = 4;
+			Field[y1][min - 2] = 4;
+			Field[y1 + 1][min - 2] = 4;
+		}
+		if (max + 2 <= 20) {
+			Field[y1 - 1][max + 2] = 4;
+			Field[y1][max + 2] = 4;
+			Field[y1 + 1][max + 2] = 4;
+		}
+	}
+	else cout << "Error rotation\n";
+	return true;
+}
+void generateSpeedboat(struct Speedboat& ship, short int(&Field)[10][21]) {
+	short int x1 = -1, y1 = -1;
+	do {
+		x1 = (rand() % 10) * 2 + 1;
+		y1 = rand() % 10;
+	} while (Field[y1][x1] != 0);
+	ship.x1 = x1; ship.y1 = y1;
+	Field[y1][x1] = 2;
+
+	if (y1 - 1 >= 0 && x1 - 2 >= 0)Field[y1 - 1][x1 - 2] = 4;
+	if (y1 - 1 >= 0)Field[y1 - 1][x1] = 4;
+	if (y1 - 1 >= 0 && x1 + 2 <= 20)Field[y1 - 1][x1 + 2] = 4;
+	if (x1 - 2 >= 0)Field[y1][x1 - 2] = 4;
+	if (x1 + 2 <= 20)Field[y1][x1 + 2] = 4;
+	if (y1 + 1 < 10 && x1 - 2 >= 0)Field[y1 + 1][x1 - 2] = 4;
+	if (y1 + 1 < 10)Field[y1 + 1][x1] = 4;
+	if (y1 + 1 < 10 && x1 + 2 <= 20)Field[y1 + 1][x1 + 2] = 4;
+
+	if (x1 - 1 >= 0)Field[y1][x1 - 1] = 3;
+	if (x1 + 1 <= 20)Field[y1][x1 + 1] = 3;
+}
+bool generateBoats() {
+	// Генерация кораблей Игрока
+	generateBattleship(PlayerBattleship, PlayerField);
+	if (!generateCruiser(PlayerCruiser1, PlayerField))return false;
+	if (!generateCruiser(PlayerCruiser2, PlayerField))return false;
+	if (!generateDestroyer(PlayerDestroyer1, PlayerField))return false;
+	if (!generateDestroyer(PlayerDestroyer2, PlayerField))return false;
+	if (!generateDestroyer(PlayerDestroyer3, PlayerField))return false;
+	generateSpeedboat(PlayerSpeedboat1, PlayerField);
+	generateSpeedboat(PlayerSpeedboat2, PlayerField);
+	generateSpeedboat(PlayerSpeedboat3, PlayerField);
+	generateSpeedboat(PlayerSpeedboat4, PlayerField);
+
+	//Генерация кораблей Противника
+	generateBattleship(EnemyBattleship, EnemyField);
+	if (!generateCruiser(EnemyCruiser1, EnemyField))return false;
+	if (!generateCruiser(EnemyCruiser2, EnemyField))return false;
+	if (!generateDestroyer(EnemyDestroyer1, EnemyField))return false;
+	if (!generateDestroyer(EnemyDestroyer2, EnemyField))return false;
+	if (!generateDestroyer(EnemyDestroyer3, EnemyField))return false;
+	generateSpeedboat(EnemySpeedboat1, EnemyField);
+	generateSpeedboat(EnemySpeedboat2, EnemyField);
+	generateSpeedboat(EnemySpeedboat3, EnemyField);
+	generateSpeedboat(EnemySpeedboat4, EnemyField);
+	return true;
 }

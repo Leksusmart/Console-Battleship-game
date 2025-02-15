@@ -1,3 +1,5 @@
 /dest/
 /.vs/
 .exe
+.vcxproj.user
+.user
