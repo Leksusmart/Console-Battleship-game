@@ -4,14 +4,10 @@
 using namespace std;
 
 void PrintFields();
-bool checkE(struct Battleship*);
-bool checkP(struct Battleship*);
-bool checkE(struct Cruiser*);
-bool checkP(struct Cruiser*);
-bool checkE(struct Destroyer*);
-bool checkP(struct Destroyer*);
-bool checkE(struct Speedboat*);
-bool checkP(struct Speedboat*);
+bool check(struct Battleship&, short int(&Field)[10][21]);
+bool check(struct Cruiser&, short int(&Field)[10][21]);
+bool check(struct Destroyer&, short int(&Field)[10][21]);
+bool check(struct Speedboat&, short int(&Field)[10][21]);
 void dead();
 void damaged();
 void fine();
@@ -34,7 +30,7 @@ public:
 	void setcheats() {
 		cheatstatus = true;
 	}
-	bool readcheats() {
+	bool readcheats() const {
 		return cheatstatus;
 	}
 };
@@ -1993,8 +1989,6 @@ againEnemyDestroyer3:
 	PlayerField[PlayerSpeedboat3.y][PlayerSpeedboat3.x] = 2;
 	PlayerField[PlayerSpeedboat4.y][PlayerSpeedboat4.x] = 2;
 
-	//Вывод на экран
-	PrintFields();
 	bool checkBoatsOnce = true;
 	if (checkBoatsOnce) {//Проверка на создание всех кораблей
 		checkBoatsOnce = false;
@@ -2017,6 +2011,9 @@ againEnemyDestroyer3:
 			goto regenerate;
 		}
 	}
+	//Вывод на экран
+	PrintFields();
+
 	once = true;
 	bool CanLastItitiate = true;
 	short int WhatsWay = -1;
@@ -2278,16 +2275,16 @@ againEnemyDestroyer3:
 					cout << "\a";
 					strike = true;
 					strikeCounter++;
-					checkP(&PlayerBattleship);
-					checkP(&PlayerCruiser1);
-					checkP(&PlayerCruiser2);
-					checkP(&PlayerDestroyer1);
-					checkP(&PlayerDestroyer2);
-					checkP(&PlayerDestroyer3);
-					checkP(&PlayerSpeedboat1);
-					checkP(&PlayerSpeedboat2);
-					checkP(&PlayerSpeedboat3);
-					checkP(&PlayerSpeedboat4);
+					check(PlayerBattleship, PlayerField);
+					check(PlayerCruiser1, PlayerField);
+					check(PlayerCruiser2, PlayerField);
+					check(PlayerDestroyer1, PlayerField);
+					check(PlayerDestroyer2, PlayerField);
+					check(PlayerDestroyer3, PlayerField);
+					check(PlayerSpeedboat1, PlayerField);
+					check(PlayerSpeedboat2, PlayerField);
+					check(PlayerSpeedboat3, PlayerField);
+					check(PlayerSpeedboat4, PlayerField);
 					//Если корабль убит то следующий выстрел рандом
 					if (PlayerField[y][x] == 6) {
 						CanLastItitiate = true;
@@ -2525,16 +2522,16 @@ againEnemyDestroyer3:
 					cout << "\a";
 					strike = true;
 					strikeCounter++;
-					checkP(&PlayerBattleship);
-					checkP(&PlayerCruiser1);
-					checkP(&PlayerCruiser2);
-					checkP(&PlayerDestroyer1);
-					checkP(&PlayerDestroyer2);
-					checkP(&PlayerDestroyer3);
-					checkP(&PlayerSpeedboat1);
-					checkP(&PlayerSpeedboat2);
-					checkP(&PlayerSpeedboat3);
-					checkP(&PlayerSpeedboat4);
+					check(PlayerBattleship, PlayerField);
+					check(PlayerCruiser1, PlayerField);
+					check(PlayerCruiser2, PlayerField);
+					check(PlayerDestroyer1, PlayerField);
+					check(PlayerDestroyer2, PlayerField);
+					check(PlayerDestroyer3, PlayerField);
+					check(PlayerSpeedboat1, PlayerField);
+					check(PlayerSpeedboat2, PlayerField);
+					check(PlayerSpeedboat3, PlayerField);
+					check(PlayerSpeedboat4, PlayerField);
 					//Если корабль убит
 					if (PlayerField[y][x] == 6) {
 						CanLastItitiate = true;
@@ -2557,33 +2554,32 @@ againEnemyDestroyer3:
 			enemyShot(x, y);
 			if (strike == false)turn = true;//Передача хода игроку
 		}
-		checkE(&EnemyBattleship);
-		checkE(&EnemyCruiser1);
-		checkE(&EnemyCruiser2);
-		checkE(&EnemyDestroyer1);
-		checkE(&EnemyDestroyer2);
-		checkE(&EnemyDestroyer3);
-		checkE(&EnemySpeedboat1);
-		checkE(&EnemySpeedboat2);
-		checkE(&EnemySpeedboat3);
-		checkE(&EnemySpeedboat4);
+		check(EnemyBattleship, EnemyField);
+		check(EnemyCruiser1, EnemyField);
+		check(EnemyCruiser2, EnemyField);
+		check(EnemyDestroyer1, EnemyField);
+		check(EnemyDestroyer2, EnemyField);
+		check(EnemyDestroyer3, EnemyField);
+		check(EnemySpeedboat1, EnemyField);
+		check(EnemySpeedboat2, EnemyField);
+		check(EnemySpeedboat3, EnemyField);
+		check(EnemySpeedboat4, EnemyField);
 
-		checkP(&PlayerBattleship);
-		checkP(&PlayerCruiser1);
-		checkP(&PlayerCruiser2);
-		checkP(&PlayerDestroyer1);
-		checkP(&PlayerDestroyer2);
-		checkP(&PlayerDestroyer3);
-		checkP(&PlayerSpeedboat1);
-		checkP(&PlayerSpeedboat2);
-		checkP(&PlayerSpeedboat3);
-		checkP(&PlayerSpeedboat4);
+		check(PlayerBattleship, PlayerField);
+		check(PlayerCruiser1, PlayerField);
+		check(PlayerCruiser2, PlayerField);
+		check(PlayerDestroyer1, PlayerField);
+		check(PlayerDestroyer2, PlayerField);
+		check(PlayerDestroyer3, PlayerField);
+		check(PlayerSpeedboat1, PlayerField);
+		check(PlayerSpeedboat2, PlayerField);
+		check(PlayerSpeedboat3, PlayerField);
+		check(PlayerSpeedboat4, PlayerField);
 		PrintFields();
 	}
 	return 0;
 }
 void PrintFields() {
-	//system("cls");
 	int EnemyMissCounter = 0;
 	for (int i = 0; i < 10; i++)
 		for (int j = 1; j < 21; j += 2)if (PlayerField[i][j] == 1)EnemyMissCounter++;
@@ -2752,37 +2748,37 @@ void PrintFields() {
 void checkPlayerInterface(int y) {
 	if (y == 3) {
 		if (PlayerBattleship.dead1) {
-			if (checkP(&PlayerBattleship)) dead();
+			if (check(PlayerBattleship, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser1.dead1) {
-			if (checkP(&PlayerCruiser1)) dead();
+			if (check(PlayerCruiser1, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser2.dead1) {
-			if (checkP(&PlayerCruiser2)) dead();
+			if (check(PlayerCruiser2, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer1.dead1) {
-			if (checkP(&PlayerDestroyer1)) dead();
+			if (check(PlayerDestroyer1, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer2.dead1) {
-			if (checkP(&PlayerDestroyer2)) dead();
+			if (check(PlayerDestroyer2, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer3.dead1) {
-			if (checkP(&PlayerDestroyer3)) dead();
+			if (check(PlayerDestroyer3, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
@@ -2801,63 +2797,63 @@ void checkPlayerInterface(int y) {
 	}
 	if (y == 4) {
 		if (PlayerBattleship.dead2) {
-			if (checkP(&PlayerBattleship)) dead();
+			if (check(PlayerBattleship, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser1.dead2) {
-			if (checkP(&PlayerCruiser1)) dead();
+			if (check(PlayerCruiser1, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser2.dead2) {
-			if (checkP(&PlayerCruiser2)) dead();
+			if (check(PlayerCruiser2, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer1.dead2) {
-			if (checkP(&PlayerDestroyer1)) dead();
+			if (check(PlayerDestroyer1, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer2.dead2) {
-			if (checkP(&PlayerDestroyer2)) dead();
+			if (check(PlayerDestroyer2, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerDestroyer3.dead2) {
-			if (checkP(&PlayerDestroyer3)) dead();
+			if (check(PlayerDestroyer3, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 	}
 	if (y == 5) {
 		if (PlayerBattleship.dead3) {
-			if (checkP(&PlayerBattleship)) dead();
+			if (check(PlayerBattleship, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser1.dead3) {
-			if (checkP(&PlayerCruiser1)) dead();
+			if (check(PlayerCruiser1, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (PlayerCruiser2.dead2) {
-			if (checkP(&PlayerCruiser2)) dead();
+			if (check(PlayerCruiser2, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
 	}
 	if (y == 6) {
 		if (PlayerBattleship.dead4) {
-			if (checkP(&PlayerBattleship)) dead();
+			if (check(PlayerBattleship, PlayerField)) dead();
 			else damaged();
 		}
 		else fine();
@@ -2866,37 +2862,37 @@ void checkPlayerInterface(int y) {
 void checkEnemyInterface(int y) {
 	if (y == 3) {
 		if (EnemyBattleship.dead1) {
-			if (checkE(&EnemyBattleship)) dead();
+			if (check(EnemyBattleship, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser1.dead1) {
-			if (checkE(&EnemyCruiser1)) dead();
+			if (check(EnemyCruiser1, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser2.dead1) {
-			if (checkE(&EnemyCruiser2)) dead();
+			if (check(EnemyCruiser2, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer1.dead1) {
-			if (checkE(&EnemyDestroyer1)) dead();
+			if (check(EnemyDestroyer1, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer2.dead1) {
-			if (checkE(&EnemyDestroyer2)) dead();
+			if (check(EnemyDestroyer2, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer3.dead1) {
-			if (checkE(&EnemyDestroyer3)) dead();
+			if (check(EnemyDestroyer3, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
@@ -2915,200 +2911,128 @@ void checkEnemyInterface(int y) {
 	}
 	if (y == 4) {
 		if (EnemyBattleship.dead2) {
-			if (checkE(&EnemyBattleship)) dead();
+			if (check(EnemyBattleship, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser1.dead2) {
-			if (checkE(&EnemyCruiser1)) dead();
+			if (check(EnemyCruiser1, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser2.dead2) {
-			if (checkE(&EnemyCruiser2)) dead();
+			if (check(EnemyCruiser2, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer1.dead2) {
-			if (checkE(&EnemyDestroyer1)) dead();
+			if (check(EnemyDestroyer1, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer2.dead2) {
-			if (checkE(&EnemyDestroyer2)) dead();
+			if (check(EnemyDestroyer2, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyDestroyer3.dead2) {
-			if (checkE(&EnemyDestroyer3)) dead();
+			if (check(EnemyDestroyer3, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 	}
 	if (y == 5) {
 		if (EnemyBattleship.dead3) {
-			if (checkE(&EnemyBattleship)) dead();
+			if (check(EnemyBattleship, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser1.dead3) {
-			if (checkE(&EnemyCruiser1)) dead();
+			if (check(EnemyCruiser1, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 		cout << " ";
 		if (EnemyCruiser2.dead2) {
-			if (checkE(&EnemyCruiser2)) dead();
+			if (check(EnemyCruiser2, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 	}
 	if (y == 6) {
 		if (EnemyBattleship.dead4) {
-			if (checkE(&EnemyBattleship)) dead();
+			if (check(EnemyBattleship, EnemyField)) dead();
 			else damaged();
 		}
 		else fine();
 	}
 }
-bool checkE(struct Battleship* boat) {
-	if (EnemyField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
+bool check(struct Battleship& boat, short int (& Field)[10][21]) {
+	if (Field[boat.y1][boat.x1] == 5) {
+		boat.dead1 = true;
 	}
-	if (EnemyField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
+	if (Field[boat.y2][boat.x2] == 5) {
+		boat.dead2 = true;
 	}
-	if (EnemyField[boat->y3][boat->x3] == 5) {
-		boat->dead3 = true;
+	if (Field[boat.y3][boat.x3] == 5) {
+		boat.dead3 = true;
 	}
-	if (EnemyField[boat->y4][boat->x4] == 5) {
-		boat->dead4 = true;
+	if (Field[boat.y4][boat.x4] == 5) {
+		boat.dead4 = true;
 	}
-	if (boat->dead1 && boat->dead2 && boat->dead3 && boat->dead4) {
-		EnemyField[boat->y1][boat->x1] = 6;
-		EnemyField[boat->y2][boat->x2] = 6;
-		EnemyField[boat->y3][boat->x3] = 6;
-		EnemyField[boat->y4][boat->x4] = 6;
+	if (boat.dead1 && boat.dead2 && boat.dead3 && boat.dead4) {
+		Field[boat.y1][boat.x1] = 6;
+		Field[boat.y2][boat.x2] = 6;
+		Field[boat.y3][boat.x3] = 6;
+		Field[boat.y4][boat.x4] = 6;
 		return true;
 	}
 	return false;
 }
-bool checkE(struct Cruiser* boat) {
-	if (EnemyField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
+bool check(struct Cruiser& boat, short int(&Field)[10][21]) {
+	if (Field[boat.y1][boat.x1] == 5) {
+		boat.dead1 = true;
 	}
-	if (EnemyField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
+	if (Field[boat.y2][boat.x2] == 5) {
+		boat.dead2 = true;
 	}
-	if (EnemyField[boat->y3][boat->x3] == 5) {
-		boat->dead3 = true;
+	if (Field[boat.y3][boat.x3] == 5) {
+		boat.dead3 = true;
 	}
-	if (boat->dead1 && boat->dead2 && boat->dead3) {
-		EnemyField[boat->y1][boat->x1] = 6;
-		EnemyField[boat->y2][boat->x2] = 6;
-		EnemyField[boat->y3][boat->x3] = 6;
+	if (boat.dead1 && boat.dead2 && boat.dead3) {
+		Field[boat.y1][boat.x1] = 6;
+		Field[boat.y2][boat.x2] = 6;
+		Field[boat.y3][boat.x3] = 6;
 		return true;
 	}
 	return false;
 }
-bool checkE(struct Destroyer* boat) {
-	if (EnemyField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
+bool check(struct Destroyer& boat, short int(&Field)[10][21]) {
+	if (Field[boat.y1][boat.x1] == 5) {
+		boat.dead1 = true;
 	}
-	if (EnemyField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
+	if (Field[boat.y2][boat.x2] == 5) {
+		boat.dead2 = true;
 	}
-	if (boat->dead1 && boat->dead2) {
-		EnemyField[boat->y1][boat->x1] = 6;
-		EnemyField[boat->y2][boat->x2] = 6;
+	if (boat.dead1 && boat.dead2) {
+		Field[boat.y1][boat.x1] = 6;
+		Field[boat.y2][boat.x2] = 6;
 		return true;
 	}
 	return false;
 }
-bool checkE(struct Speedboat* boat) {
-	if (EnemyField[boat->y][boat->x] == 5) {
-		boat->dead = true;
-		EnemyField[boat->y][boat->x] = 6;
+bool check(struct Speedboat& boat, short int(&Field)[10][21]) {
+	if (Field[boat.y][boat.x] == 5) {
+		boat.dead = true;
+		Field[boat.y][boat.x] = 6;
 	}
-
-	if (boat->dead == true)return true;
-	return false;
-}
-bool checkP(struct Battleship* boat) {
-	if (PlayerField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
-	}
-	if (PlayerField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
-	}
-	if (PlayerField[boat->y3][boat->x3] == 5) {
-		boat->dead3 = true;
-	}
-	if (PlayerField[boat->y4][boat->x4] == 5) {
-		boat->dead4 = true;
-	}
-	if (boat->dead1 && boat->dead2 && boat->dead3 && boat->dead4) {
-		PlayerField[boat->y1][boat->x1] = 6;
-		PlayerField[boat->y2][boat->x2] = 6;
-		PlayerField[boat->y3][boat->x3] = 6;
-		PlayerField[boat->y4][boat->x4] = 6;
-		setState7(*boat);
-
-
-		return true;
-	}
-	return false;
-}
-bool checkP(struct Cruiser* boat) {
-	if (PlayerField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
-	}
-	if (PlayerField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
-	}
-	if (PlayerField[boat->y3][boat->x3] == 5) {
-		boat->dead3 = true;
-	}
-	if (boat->dead1 && boat->dead2 && boat->dead3) {
-		PlayerField[boat->y1][boat->x1] = 6;
-		PlayerField[boat->y2][boat->x2] = 6;
-		PlayerField[boat->y3][boat->x3] = 6;
-		setState7(*boat);
-		return true;
-	}
-	return false;
-}
-bool checkP(struct Destroyer* boat) {
-	if (PlayerField[boat->y1][boat->x1] == 5) {
-		boat->dead1 = true;
-	}
-	if (PlayerField[boat->y2][boat->x2] == 5) {
-		boat->dead2 = true;
-	}
-	if (boat->dead1 && boat->dead2) {
-		PlayerField[boat->y1][boat->x1] = 6;
-		PlayerField[boat->y2][boat->x2] = 6;
-		setState7(*boat);
-		return true;
-	}
-	return false;
-}
-bool checkP(struct Speedboat* boat) {
-	if (PlayerField[boat->y][boat->x] == 5) {
-		boat->dead = true;
-		PlayerField[boat->y][boat->x] = 6;
-	}
-
-	if (boat->dead == true) {
-		setState7(*boat);
-		return true;
-	}
+	if (boat.dead == true)return true;
 	return false;
 }
 void damaged() {
