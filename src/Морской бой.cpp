@@ -20,10 +20,10 @@ void setState7(struct Battleship);
 void setState7(struct Cruiser);
 void setState7(struct Destroyer);
 void setState7(struct Speedboat);
-void generateBattleship(struct Battleship&, short int(&Field)[10][21]);
+bool generateBattleship(struct Battleship&, short int(&Field)[10][21]);
 bool generateCruiser(struct Cruiser&, short int(&Field)[10][21]);
 bool generateDestroyer(struct Destroyer&, short int(&Field)[10][21]);
-void generateSpeedboat(struct Speedboat&, short int(&Field)[10][21]);
+bool generateSpeedboat(struct Speedboat&, short int(&Field)[10][21]);
 bool generateBoats();
 
 short int EnemyField[10][21];
@@ -111,7 +111,6 @@ difficultError:
 	}
 
 regenerate:
-	srand(time(NULL));
 	//Обнуление полей игроков
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 21; j++) {
@@ -119,7 +118,7 @@ regenerate:
 			EnemyField[i][j] = 0;
 		}
 	}
-	if(!generateBoats())goto regenerate;
+	if (!generateBoats())goto regenerate;
 	bool checkBoatsOnce = true;
 	if (checkBoatsOnce) {//Проверка на создание всех кораблей
 		checkBoatsOnce = false;
@@ -173,10 +172,10 @@ regenerate:
 			}
 			string choose;
 			cin >> choose;
-			int symbol = choose[0] + choose[1];
 			if (choose.size() <= 2)goto readError;
 			if (choose.size() > 4)goto readError;
 			if (choose.size() == 4 && choose[3] != '0')goto readError;
+			int symbol = choose[0] + choose[1];
 			int x = 0;
 			switch (symbol) {
 			case -128:
@@ -245,6 +244,10 @@ regenerate:
 		}
 		else {
 			cout << "\t\t\t\tХод противника: ";
+			if (BotDifficult != 1 && BotDifficult != 2 && BotDifficult != 3) {
+				cout << "Сложность бота изменена на 3" << endl;
+				BotDifficult == 3;
+			}
 			switch (BotDifficult) {
 			case 1:
 				//Сложность "Рандом" или Лёгкая
@@ -519,7 +522,7 @@ regenerate:
 					}
 					break;
 				}
-				
+
 				if (lastMiss && strikeCounter > 1 && PlayerField[lasty][lastx] == 5) {
 					x = lastx;
 					y = lasty;
@@ -1117,7 +1120,7 @@ void checkEnemyInterface(int y) {
 		else fine();
 	}
 }
-bool check(struct Battleship& boat, short int (& Field)[10][21]) {
+bool check(struct Battleship& boat, short int(&Field)[10][21]) {
 	if (Field[boat.y1][boat.x1] == 5) {
 		boat.dead1 = true;
 	}
@@ -1266,7 +1269,7 @@ pair <int, int> emptyFieldCounter() {
 					if ((5 + x) % 4 == 0)counter.first++;//чёт
 					else counter.second++;//нечёт
 				}
-				else 
+				else
 					if ((3 + x) % 4 == 0)counter.first++;//чёт
 					else counter.second++;//нечёт
 	return counter;
@@ -1511,7 +1514,7 @@ void setState7(struct Speedboat Speedboat) {
 	if (x1 - 1 >= 0)PlayerField[y1][x1 - 1] = 3;
 	if (x1 + 1 <= 20)PlayerField[y1][x1 + 1] = 3;
 }
-void generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
+bool generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
 	short int x1 = -1, x2 = -1, x3 = -1, x4 = -1, y1 = -1, y2 = -1, y3 = -1, y4 = -1;
 	x1 = (rand() % 10) * 2 + 1;
 	y1 = rand() % 10;
@@ -1615,7 +1618,7 @@ void generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
 					x4 = x3 + 2;
 				}
 			}
-			else x = 0;
+			else return false;
 		}
 	}
 	ship.x1 = x1; ship.y1 = y1;
@@ -1702,13 +1705,15 @@ void generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
 		}
 	}
 	else cout << "Error rotation\n";
+	return true;
 }
 bool generateCruiser(struct Cruiser& ship, short int(&Field)[10][21]) {
 	short int x1 = -1, x2 = -1, x3 = -1, y1 = -1, y2 = -1, y3 = -1;
+	int errCounter = 0;
 	do {
 		x1 = (rand() % 10) * 2 + 1;
 		y1 = rand() % 10;
-	} while (Field[y1][x1] != 0);
+	} while (Field[y1][x1] != 0 && errCounter < 150);
 	short int x = rand() % 4;
 	bool once = false;
 	while (x2 == -1 || x3 == -1 || y2 == -1 || y3 == -1) {
@@ -1858,10 +1863,11 @@ bool generateCruiser(struct Cruiser& ship, short int(&Field)[10][21]) {
 }
 bool generateDestroyer(struct Destroyer& ship, short int(&Field)[10][21]) {
 	short int x1 = -1, x2 = -1, y1 = -1, y2 = -1;
+	int errCounter = 0;
 	do {
 		x1 = (rand() % 10) * 2 + 1;
 		y1 = rand() % 10;
-	} while (Field[y1][x1] != 0);
+	} while (Field[y1][x1] != 0 && errCounter < 150);
 	short int x = rand() % 4;
 	bool once = false;
 	while (x2 == -1 || y2 == -1) {
@@ -1963,12 +1969,14 @@ bool generateDestroyer(struct Destroyer& ship, short int(&Field)[10][21]) {
 	else cout << "Error rotation\n";
 	return true;
 }
-void generateSpeedboat(struct Speedboat& ship, short int(&Field)[10][21]) {
+bool generateSpeedboat(struct Speedboat& ship, short int(&Field)[10][21]) {
 	short int x1 = -1, y1 = -1;
+	int errCounter = 0;
 	do {
+		errCounter++;
 		x1 = (rand() % 10) * 2 + 1;
 		y1 = rand() % 10;
-	} while (Field[y1][x1] != 0);
+	} while (Field[y1][x1] != 0 && errCounter < 150);
 	ship.x1 = x1; ship.y1 = y1;
 	Field[y1][x1] = 2;
 
@@ -1983,30 +1991,31 @@ void generateSpeedboat(struct Speedboat& ship, short int(&Field)[10][21]) {
 
 	if (x1 - 1 >= 0)Field[y1][x1 - 1] = 3;
 	if (x1 + 1 <= 20)Field[y1][x1 + 1] = 3;
+	return true;
 }
 bool generateBoats() {
 	// Генерация кораблей Игрока
-	generateBattleship(PlayerBattleship, PlayerField);
+	if (!generateBattleship(PlayerBattleship, PlayerField))return false;
 	if (!generateCruiser(PlayerCruiser1, PlayerField))return false;
 	if (!generateCruiser(PlayerCruiser2, PlayerField))return false;
 	if (!generateDestroyer(PlayerDestroyer1, PlayerField))return false;
 	if (!generateDestroyer(PlayerDestroyer2, PlayerField))return false;
 	if (!generateDestroyer(PlayerDestroyer3, PlayerField))return false;
-	generateSpeedboat(PlayerSpeedboat1, PlayerField);
-	generateSpeedboat(PlayerSpeedboat2, PlayerField);
-	generateSpeedboat(PlayerSpeedboat3, PlayerField);
-	generateSpeedboat(PlayerSpeedboat4, PlayerField);
+	if (!generateSpeedboat(PlayerSpeedboat1, PlayerField))return false;
+	if (!generateSpeedboat(PlayerSpeedboat2, PlayerField))return false;
+	if (!generateSpeedboat(PlayerSpeedboat3, PlayerField))return false;
+	if (!generateSpeedboat(PlayerSpeedboat4, PlayerField))return false;
 
 	//Генерация кораблей Противника
-	generateBattleship(EnemyBattleship, EnemyField);
+	if (!generateBattleship(EnemyBattleship, EnemyField))return false;
 	if (!generateCruiser(EnemyCruiser1, EnemyField))return false;
 	if (!generateCruiser(EnemyCruiser2, EnemyField))return false;
 	if (!generateDestroyer(EnemyDestroyer1, EnemyField))return false;
 	if (!generateDestroyer(EnemyDestroyer2, EnemyField))return false;
 	if (!generateDestroyer(EnemyDestroyer3, EnemyField))return false;
-	generateSpeedboat(EnemySpeedboat1, EnemyField);
-	generateSpeedboat(EnemySpeedboat2, EnemyField);
-	generateSpeedboat(EnemySpeedboat3, EnemyField);
-	generateSpeedboat(EnemySpeedboat4, EnemyField);
+	if (!generateSpeedboat(EnemySpeedboat1, EnemyField))return false;
+	if (!generateSpeedboat(EnemySpeedboat2, EnemyField))return false;
+	if (!generateSpeedboat(EnemySpeedboat3, EnemyField))return false;
+	if (!generateSpeedboat(EnemySpeedboat4, EnemyField))return false;
 	return true;
 }
