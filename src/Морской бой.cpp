@@ -173,7 +173,7 @@ regenerate:
 			string choose;
 			cin >> choose;
 			if (choose.size() <= 2)goto readError;
-			if (choose.size() > 4)goto readError;
+			if (choose.empty() || choose.size() > 4) goto readError;
 			if (choose.size() == 4 && choose[3] != '0')goto readError;
 			int symbol = choose[0] + choose[1];
 			int x = 0;
@@ -246,7 +246,7 @@ regenerate:
 			cout << "\t\t\t\tХод противника: ";
 			if (BotDifficult != 1 && BotDifficult != 2 && BotDifficult != 3) {
 				cout << "Сложность бота изменена на 3" << endl;
-				BotDifficult == 3;
+				BotDifficult = 3;
 			}
 			switch (BotDifficult) {
 			case 1:
@@ -408,7 +408,6 @@ regenerate:
 						return 0;
 					}
 				}
-
 
 			EnemyBot2shot:
 				if (PlayerField[y][x] == 2) {
@@ -729,156 +728,228 @@ regenerate:
 void PrintFields() {
 	int EnemyMissCounter = 0;
 	for (int i = 0; i < 10; i++)
-		for (int j = 1; j < 21; j += 2)if (PlayerField[i][j] == 1)EnemyMissCounter++;
+		for (int j = 1; j < 21; j += 2)
+			if (PlayerField[i][j] == 1)
+				EnemyMissCounter++;
 	int PlayerMissCounter = 0;
 	int EnemyBoatCounter = 0;
-	//Поле врага
+	// Поле врага
 	cout << "    А Б В Г Д Е Ж З И К\n";
-	cout << "   ---------------------\n";//Верхняя граница
+	cout << "   ---------------------\n"; // Верхняя граница
 	for (int y = 0; y < 10; y++) {
-		if (y + 1 == 10)cout << 10 << '|';
-		else cout << y + 1 << " |"; // Левые границы
+		if (y + 1 == 10)
+			cout << 10 << '|';
+		else
+			cout << y + 1 << " |"; // Левые границы
 		for (int x = 0; x <= 20; x++) {
 			short int state = EnemyField[y][x];
 			if (state == 0 || state == 4) {
-				if (state == 0 && EnemyField[y][x - 1] == 6 && EnemyField[y][x + 1] == 6) {
+				if (state == 0 && x - 1 >= 0 && x + 1 < 21 && EnemyField[y][x - 1] == 6 && EnemyField[y][x + 1] == 6) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((4 << 4) | 0));
-					cout << ' ';//Мёртвая лодка (красный)
+					cout << ' '; // Мёртвая лодка (красный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (state == 0 && (EnemyField[y][x - 1] == 5 && EnemyField[y][x + 1] == 5)) {
+				else if (state == 0 && x - 1 >= 0 && x + 1 < 21 && (EnemyField[y][x - 1] == 5 && EnemyField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
-					cout << ' ';//Живая лодка (зелёный)
+					cout << ' '; // Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (cheats && state == 0 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
+				else if (cheats && state == 0 && x - 1 >= 0 && x + 1 < 21 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
-					cout << ' ';//Живая лодка (зелёный)
+					cout << ' '; // Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else cout << ' ';//Неиследованная клетка
+				else
+					cout << ' '; // Неиследованная клетка
 			}
 			else if (state == 1) {
-				cout << '*';//Мимо
+				cout << '*'; // Мимо
 				PlayerMissCounter++;
 			}
 			else if (state == 2) {
 				if (cheats) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
-					cout << ' ';//Живая лодка (зелёный)
+					cout << ' '; // Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else cout << ' ';
+				else
+					cout << ' ';
 				EnemyBoatCounter++;
 			}
 			else if (state == 3) {
-				if (EnemyField[y][x - 1] == 6 || EnemyField[y][x + 1] == 6)cout << '|';
-				else if (cheats)cout << '|';//Граница лодки
-				else cout << ' ';
+				if (x - 1 >= 0 && x + 1 < 21 && (EnemyField[y][x - 1] == 6 || EnemyField[y][x + 1] == 6))
+					cout << '|';
+				else if (cheats)
+					cout << '|'; // Граница лодки
+				else
+					cout << ' ';
 			}
 			else if (state == 5) {
 				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(console, ((2 << 4) | 4));
-				cout << '#';//Попадание в лодку
+				cout << '#'; // Попадание в лодку
 				SetConsoleTextAttribute(console, 7);
 			}
 			else if (state == 6) {
 				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(console, ((4 << 4) | 0));
-				cout << 'X';//Лодка погибла
+				cout << 'X'; // Лодка погибла
 				SetConsoleTextAttribute(console, 7);
 			}
 		}
-		cout << "|";//Правая граница
-		if (y == 0) { cout << "\t\t\t\t\t  |   " << "  "; HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); SetConsoleTextAttribute(console, ((4 << 4) | 0)); cout << 'X'; SetConsoleTextAttribute(console, 7); cout << " - убил     "; SetConsoleTextAttribute(console, ((2 << 4) | 4)); cout << '#';	SetConsoleTextAttribute(console, 7); cout << " - попал     * - мимо"; }
-		if (y == 1)cout << "\t\t\t\t\t  |   ";
-		if (y == 2)cout << "\t\t\t\t\t  С   ";
-		if (y == 3) { cout << "\t\t\t\t\t  П   "; checkEnemyInterface(y); }
-		if (y == 4) { cout << "\t<---- Игровое поле противника\t  Р   "; checkEnemyInterface(y); }
-		if (y == 5) { cout << "\t\t\t\t\t  А   "; checkEnemyInterface(y); }
-		if (y == 6) { cout << "\t\t\t\t\t  В   "; checkEnemyInterface(y); }
-		if (y == 7)cout << "\t\t\t\t\t  К   ";
-		if (y == 8) { cout << "\t\t\t\t\t  А   "; cout << "Противник промахнулся " << EnemyMissCounter << " раз."; }
-		if (y == 9) { cout << "\t\t\t\t\t  |   "; enemyName(BotDifficult); }
+		cout << "|"; // Правая граница
+		if (y == 0) {
+			cout << "\t\t\t\t\t  |   ";
+			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(console, ((4 << 4) | 0));
+			cout << 'X';
+			SetConsoleTextAttribute(console, 7);
+			cout << " - убил     ";
+			SetConsoleTextAttribute(console, ((2 << 4) | 4));
+			cout << '#';
+			SetConsoleTextAttribute(console, 7);
+			cout << " - попал     * - мимо";
+		}
+		if (y == 1)
+			cout << "\t\t\t\t\t  |   ";
+		if (y == 2)
+			cout << "\t\t\t\t\t  С   ";
+		if (y == 3) {
+			cout << "\t\t\t\t\t  П   ";
+			checkEnemyInterface(y);
+		}
+		if (y == 4) {
+			cout << "\t<---- Игровое поле противника\t  Р   ";
+			checkEnemyInterface(y);
+		}
+		if (y == 5) {
+			cout << "\t\t\t\t\t  А   ";
+			checkEnemyInterface(y);
+		}
+		if (y == 6) {
+			cout << "\t\t\t\t\t  В   ";
+			checkEnemyInterface(y);
+		}
+		if (y == 7)
+			cout << "\t\t\t\t\t  К   ";
+		if (y == 8) {
+			cout << "\t\t\t\t\t  А   ";
+			cout << "Противник промахнулся " << EnemyMissCounter << " раз.";
+		}
+		if (y == 9) {
+			cout << "\t\t\t\t\t  |   ";
+			enemyName(BotDifficult);
+		}
 
 		cout << endl;
 	}
-	//Нижняя граница
+	// Нижняя граница
 	cout << "   ---------------------\t\t\t\t\t  |   ";
 	cout << endl;
 	cout << endl;
 	cout << endl;
 
-
 	int PlayerBoatCounter = 0;
-	//Поле игрока
+	// Поле игрока
 	cout << "    А Б В Г Д Е Ж З И К\n";
-	cout << "   ---------------------\n";//Верхняя граница
+	cout << "   ---------------------\n"; // Верхняя граница
 	for (int y = 0; y < 10; y++) {
-		if (y + 1 == 10)cout << 10 << '|';
-		else cout << y + 1 << " |"; // Левые границы
+		if (y + 1 == 10)
+			cout << 10 << '|';
+		else
+			cout << y + 1 << " |"; // Левые границы
 		for (int x = 0; x <= 20; x++) {
 			short int state = PlayerField[y][x];
 			if (state == 0 || state == 4 || state == 7) {
-				if (state == 0 && PlayerField[y][x - 1] == 6 && PlayerField[y][x + 1] == 6) {
+				if (state == 0 && x - 1 >= 0 && x + 1 < 21 && PlayerField[y][x - 1] == 6 && PlayerField[y][x + 1] == 6) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((4 << 4) | 0));
-					cout << ' ';//Мёртвая лодка (красный)
+					cout << ' '; // Мёртвая лодка (красный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (state == 0 && (PlayerField[y][x - 1] == 2 || PlayerField[y][x - 1] == 5) && (PlayerField[y][x + 1] == 2 || PlayerField[y][x + 1] == 5)) {
+				else if (state == 0 && x - 1 >= 0 && x + 1 < 21 && (PlayerField[y][x - 1] == 2 || PlayerField[y][x - 1] == 5) && (PlayerField[y][x + 1] == 2 || PlayerField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
-					cout << ' ';//Живая лодка (зелёный)
+					cout << ' '; // Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else cout << ' ';//Неиследованная клетка
-
+				else
+					cout << ' '; // Неиследованная клетка
 			}
 			else if (state == 1) {
-				cout << '*';//Мимо
+				cout << '*'; // Мимо
 			}
 			else if (state == 2) {
 				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(console, ((2 << 4) | 7));
-				cout << ' ';//Живая лодка (зелёный)
+				cout << ' '; // Живая лодка (зелёный)
 				SetConsoleTextAttribute(console, 7);
 				PlayerBoatCounter++;
 			}
 			else if (state == 3) {
-				cout << '|';//Граница лодки
+				cout << '|'; // Граница лодки
 			}
 			else if (state == 5) {
 				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(console, ((2 << 4) | 4));
-				cout << '#';//Попадание в лодку
+				cout << '#'; // Попадание в лодку
 				SetConsoleTextAttribute(console, 7);
 			}
 			else if (state == 6) {
 				HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 				SetConsoleTextAttribute(console, ((4 << 4) | 0));
-				cout << 'X';//Лодка погибла
+				cout << 'X'; // Лодка погибла
 				SetConsoleTextAttribute(console, 7);
 			}
 		}
-		cout << "|";//Правая граница
-		if (y == 0) { cout << "\t\t\t\t\t  |   " << "  "; HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE); SetConsoleTextAttribute(console, ((4 << 4) | 0)); cout << 'X'; SetConsoleTextAttribute(console, 7); cout << " - убил     "; SetConsoleTextAttribute(console, ((2 << 4) | 4)); cout << '#';	SetConsoleTextAttribute(console, 7); cout << " - попал     * - мимо"; }
-		if (y == 1)cout << "\t\t\t\t\t  |   ";
-		if (y == 2)cout << "\t\t\t\t\t  С   ";
-		if (y == 3) { cout << "\t\t\t\t\t  П   "; checkPlayerInterface(y); }
-		if (y == 4) { cout << "\t<---- Ваше игровое поле\t\t  Р   "; checkPlayerInterface(y); }
-		if (y == 5) { cout << "\t\t\t\t\t  А   "; checkPlayerInterface(y); }
-		if (y == 6) { cout << "\t\t\t\t\t  В   "; checkPlayerInterface(y); }
-		if (y == 7)cout << "\t\t\t\t\t  К   ";
-		if (y == 8) { cout << "\t\t\t\t\t  А   "; cout << "Вы промахнулись " << PlayerMissCounter << " раз."; }
-		if (y == 9)cout << "\t\t\t\t\t  |   ";
+		cout << "|"; // Правая граница
+		if (y == 0) {
+			cout << "\t\t\t\t\t  |   ";
+			HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(console, ((4 << 4) | 0));
+			cout << 'X';
+			SetConsoleTextAttribute(console, 7);
+			cout << " - убил     ";
+			SetConsoleTextAttribute(console, ((2 << 4) | 4));
+			cout << '#';
+			SetConsoleTextAttribute(console, 7);
+			cout << " - попал     * - мимо";
+		}
+		if (y == 1)
+			cout << "\t\t\t\t\t  |   ";
+		if (y == 2)
+			cout << "\t\t\t\t\t  С   ";
+		if (y == 3) {
+			cout << "\t\t\t\t\t  П   ";
+			checkPlayerInterface(y);
+		}
+		if (y == 4) {
+			cout << "\t<---- Ваше игровое поле\t\t  Р   ";
+			checkPlayerInterface(y);
+		}
+		if (y == 5) {
+			cout << "\t\t\t\t\t  А   ";
+			checkPlayerInterface(y);
+		}
+		if (y == 6) {
+			cout << "\t\t\t\t\t  В   ";
+			checkPlayerInterface(y);
+		}
+		if (y == 7)
+			cout << "\t\t\t\t\t  К   ";
+		if (y == 8) {
+			cout << "\t\t\t\t\t  А   ";
+			cout << "Вы промахнулись " << PlayerMissCounter << " раз.";
+		}
+		if (y == 9)
+			cout << "\t\t\t\t\t  |   ";
 		cout << endl;
 	}
-	cout << "   ---------------------\t\t\t\t\t  |   ";//Нижняя граница
+	cout << "   ---------------------\t\t\t\t\t  |   "; // Нижняя граница
 	cout << endl;
 
 	if (EnemyBoatCounter == 0) {
@@ -1256,6 +1327,8 @@ void enemyShot(int x, int y) {
 	case 19:
 		BotChoose = 'К';
 		break;
+	default:
+		BotChoose = '?';
 	}
 	cout << BotChoose << y + 1 << endl;
 }
