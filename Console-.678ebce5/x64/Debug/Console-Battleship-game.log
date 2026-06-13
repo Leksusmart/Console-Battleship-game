@@ -1,0 +1,28 @@
+﻿  Морской бой.cpp
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(84,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1298,17): warning C4305: инициализация: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1298,19): warning C4309: инициализация: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1301,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1301,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1304,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1304,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1307,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1307,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1310,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1310,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1313,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1313,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1316,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1316,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1319,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1319,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1322,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1322,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1325,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1325,15): warning C4309: =: усечение константного значения
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1328,15): warning C4305: =: усечение из "int" в "char"
+A:\projects\cpp\Console-Battleship-game\src\Морской бой.cpp(1328,15): warning C4309: =: усечение константного значения
+Морской бой.obj : error LNK2001: неразрешенный внешний символ __imp__CrtDbgReport.
+msvcprtd.lib(locale0_implib.obj) : error LNK2001: неразрешенный внешний символ __imp__free_dbg.
+msvcprtd.lib(locale0_implib.obj) : error LNK2001: неразрешенный внешний символ __imp__malloc_dbg.
+A:\projects\cpp\Console-Battleship-game\x64\Debug\Console-Battleship-game.exe : fatal error LNK1120: неразрешенных внешних элементов: 3

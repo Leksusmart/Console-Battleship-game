@@ -129,7 +129,6 @@ regenerate:
 			}
 		}
 		if (u != 20) {
-			cout << "Regeneration Player value=" << u << endl;
 			goto regenerate;
 		}
 		u = 0;
@@ -139,7 +138,6 @@ regenerate:
 			}
 		}
 		if (u != 20) {
-			cout << "Regeneration Enemy value=" << u << endl;
 			goto regenerate;
 		}
 	}
@@ -756,7 +754,7 @@ void PrintFields() {
 					cout << ' '; // Живая лодка (зелёный)
 					SetConsoleTextAttribute(console, 7);
 				}
-				else if (cheats && state == 0 && x - 1 >= 0 && x + 1 < 21 && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
+				else if (cheats && (state == 0) && (x - 1 >= 0) && (x + 1 < 21) && (EnemyField[y][x - 1] == 2 || EnemyField[y][x - 1] == 5) && (EnemyField[y][x + 1] == 2 || EnemyField[y][x + 1] == 5)) {
 					HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 					SetConsoleTextAttribute(console, ((2 << 4) | 7));
 					cout << ' '; // Живая лодка (зелёный)
@@ -1389,14 +1387,14 @@ void setState7(struct Battleship Battleship) {
 		if (min > y4)min = y4; if (max < y4)max = y4;
 
 		if (min - 1 >= 0) {
-			if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
 			if (PlayerField[min - 1][x1] != 1)PlayerField[min - 1][x1] = 7;
-			if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
 		}
 		if (max + 1 < 10) {
-			if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
 			if (PlayerField[max + 1][x1] != 1)PlayerField[max + 1][x1] = 7;
-			if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
 		}
 	}
 	else if (Battleship.y1 == y2 && Battleship.y1 == y3 && Battleship.y1 == y4) {//Горизонтально расположен
@@ -1420,14 +1418,14 @@ void setState7(struct Battleship Battleship) {
 		if (min > x4)min = x4; if (max < x4)max = x4;
 
 		if (min - 2 >= 0) {
-			if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
 			if (PlayerField[y1][min - 2] != 1)PlayerField[y1][min - 2] = 7;
-			if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
 		}
 		if (max + 2 <= 20) {
-			if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
 			if (PlayerField[y1][max + 2] != 1)PlayerField[y1][max + 2] = 7;
-			if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
 		}
 	}
 	else cout << "Error rotation\n";
@@ -1467,14 +1465,14 @@ void setState7(struct Cruiser Cruiser) {
 		if (min > y3)min = y3; if (max < y3)max = y3;
 
 		if (min - 1 >= 0) {
-			if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
 			if (PlayerField[min - 1][x1] != 1)PlayerField[min - 1][x1] = 7;
-			if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
 		}
 		if (max + 1 < 10) {
-			if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
 			if (PlayerField[max + 1][x1] != 1)PlayerField[max + 1][x1] = 7;
-			if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
 		}
 	}
 	else if (Cruiser.y1 == Cruiser.y2 && Cruiser.y1 == Cruiser.y3) {//Горизонтально расположен
@@ -1495,14 +1493,14 @@ void setState7(struct Cruiser Cruiser) {
 		if (min > x3)min = x3; if (max < x3)max = x3;
 
 		if (min - 2 >= 0) {
-			if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
 			if (PlayerField[y1][min - 2] != 1)PlayerField[y1][min - 2] = 7;
-			if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
 		}
 		if (max + 2 <= 20) {
-			if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
 			if (PlayerField[y1][max + 2] != 1)PlayerField[y1][max + 2] = 7;
-			if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
 		}
 	}
 	else cout << "Error rotation\n";
@@ -1535,14 +1533,14 @@ void setState7(struct Destroyer Destroyer) {
 		if (min > y2)min = y2; if (max < y2)max = y2;
 
 		if (min - 1 >= 0) {
-			if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[min - 1][x1 - 2] != 1)PlayerField[min - 1][x1 - 2] = 7;
 			if (PlayerField[min - 1][x1] != 1)PlayerField[min - 1][x1] = 7;
-			if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[min - 1][x1 + 2] != 1)PlayerField[min - 1][x1 + 2] = 7;
 		}
 		if (max + 1 < 10) {
-			if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
+			if (x1 - 2 >= 0) if (PlayerField[max + 1][x1 - 2] != 1)PlayerField[max + 1][x1 - 2] = 7;
 			if (PlayerField[max + 1][x1] != 1)PlayerField[max + 1][x1] = 7;
-			if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
+			if (x1 + 2 <= 20) if (PlayerField[max + 1][x1 + 2] != 1)PlayerField[max + 1][x1 + 2] = 7;
 		}
 	}
 	else if (Destroyer.y1 == Destroyer.y2) {//Горизонтально расположен
@@ -1560,14 +1558,14 @@ void setState7(struct Destroyer Destroyer) {
 		if (min > x2)min = x2; if (max < x2)max = x2;
 
 		if (min - 2 >= 0) {
-			if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][min - 2] != 1)PlayerField[y1 - 1][min - 2] = 7;
 			if (PlayerField[y1][min - 2] != 1)PlayerField[y1][min - 2] = 7;
-			if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][min - 2] != 1)PlayerField[y1 + 1][min - 2] = 7;
 		}
 		if (max + 2 <= 20) {
-			if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
+			if (y1 - 1 >= 0) if (PlayerField[y1 - 1][max + 2] != 1)PlayerField[y1 - 1][max + 2] = 7;
 			if (PlayerField[y1][max + 2] != 1)PlayerField[y1][max + 2] = 7;
-			if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
+			if (y1 + 1 < 10) if (PlayerField[y1 + 1][max + 2] != 1)PlayerField[y1 + 1][max + 2] = 7;
 		}
 	}
 	else cout << "Error rotation\n";
@@ -1736,14 +1734,14 @@ bool generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
 		if (min > y4)min = y4; if (max < y4)max = y4;
 
 		if (min - 1 >= 0) {
-			Field[min - 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[min - 1][x1 - 2] = 4;
 			Field[min - 1][x1] = 4;
-			Field[min - 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[min - 1][x1 + 2] = 4;
 		}
 		if (max + 1 < 10) {
-			Field[max + 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[max + 1][x1 - 2] = 4;
 			Field[max + 1][x1] = 4;
-			Field[max + 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[max + 1][x1 + 2] = 4;
 		}
 	}
 	else if (ship.y1 == y2 && ship.y1 == y3 && ship.y1 == y4) {//Горизонтально расположен
@@ -1767,14 +1765,14 @@ bool generateBattleship(struct Battleship& ship, short int(&Field)[10][21]) {
 		if (min > x4)min = x4; if (max < x4)max = x4;
 
 		if (min - 2 >= 0) {
-			Field[y1 - 1][min - 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][min - 2] = 4;
 			Field[y1][min - 2] = 4;
-			Field[y1 + 1][min - 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][min - 2] = 4;
 		}
 		if (max + 2 <= 20) {
-			Field[y1 - 1][max + 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][max + 2] = 4;
 			Field[y1][max + 2] = 4;
-			Field[y1 + 1][max + 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][max + 2] = 4;
 		}
 	}
 	else cout << "Error rotation\n";
@@ -1893,14 +1891,14 @@ bool generateCruiser(struct Cruiser& ship, short int(&Field)[10][21]) {
 		if (min > y3)min = y3; if (max < y3)max = y3;
 
 		if (min - 1 >= 0) {
-			Field[min - 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[min - 1][x1 - 2] = 4;
 			Field[min - 1][x1] = 4;
-			Field[min - 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[min - 1][x1 + 2] = 4;
 		}
 		if (max + 1 < 10) {
-			Field[max + 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[max + 1][x1 - 2] = 4;
 			Field[max + 1][x1] = 4;
-			Field[max + 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[max + 1][x1 + 2] = 4;
 		}
 	}
 	else if (ship.y1 == ship.y2 && ship.y1 == ship.y3) {//Горизонтально расположен
@@ -1921,14 +1919,14 @@ bool generateCruiser(struct Cruiser& ship, short int(&Field)[10][21]) {
 		if (min > x3)min = x3; if (max < x3)max = x3;
 
 		if (min - 2 >= 0) {
-			Field[y1 - 1][min - 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][min - 2] = 4;
 			Field[y1][min - 2] = 4;
-			Field[y1 + 1][min - 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][min - 2] = 4;
 		}
 		if (max + 2 <= 20) {
-			Field[y1 - 1][max + 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][max + 2] = 4;
 			Field[y1][max + 2] = 4;
-			Field[y1 + 1][max + 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][max + 2] = 4;
 		}
 	}
 	else cout << "Error rotation\n";
@@ -2004,14 +2002,14 @@ bool generateDestroyer(struct Destroyer& ship, short int(&Field)[10][21]) {
 		if (min > y2)min = y2; if (max < y2)max = y2;
 
 		if (min - 1 >= 0) {
-			Field[min - 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[min - 1][x1 - 2] = 4;
 			Field[min - 1][x1] = 4;
-			Field[min - 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[min - 1][x1 + 2] = 4;
 		}
 		if (max + 1 < 10) {
-			Field[max + 1][x1 - 2] = 4;
+			if (x1 - 2 >= 0) Field[max + 1][x1 - 2] = 4;
 			Field[max + 1][x1] = 4;
-			Field[max + 1][x1 + 2] = 4;
+			if (x1 + 2 <= 20) Field[max + 1][x1 + 2] = 4;
 		}
 	}
 	else if (ship.y1 == ship.y2) {//Горизонтально расположен
@@ -2029,14 +2027,14 @@ bool generateDestroyer(struct Destroyer& ship, short int(&Field)[10][21]) {
 		if (min > x2)min = x2; if (max < x2)max = x2;
 
 		if (min - 2 >= 0) {
-			Field[y1 - 1][min - 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][min - 2] = 4;
 			Field[y1][min - 2] = 4;
-			Field[y1 + 1][min - 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][min - 2] = 4;
 		}
 		if (max + 2 <= 20) {
-			Field[y1 - 1][max + 2] = 4;
+			if (y1 - 1 >= 0) Field[y1 - 1][max + 2] = 4;
 			Field[y1][max + 2] = 4;
-			Field[y1 + 1][max + 2] = 4;
+			if (y1 + 1 < 10) Field[y1 + 1][max + 2] = 4;
 		}
 	}
 	else cout << "Error rotation\n";
